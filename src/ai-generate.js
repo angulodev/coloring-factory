@@ -57,6 +57,29 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
   return Buffer.from(part.inlineData.data, 'base64');
 }
 
+// --- Proveedor alternativo: Cloudflare Workers AI (FLUX Schnell, free tier diario) ---
+async function generateOneCF(theme, accountId, token, attempt = 1) {
+  const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/black-forest-labs/flux-1-schnell`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ prompt: PROMPT_TEMPLATE(theme), steps: 8 }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    if ((res.status === 429 || res.status >= 500) && attempt <= 3) {
+      const wait = attempt * 15000;
+      console.log(`  Rate limit/error ${res.status}, reintentando en ${wait / 1000}s...`);
+      await new Promise((r) => setTimeout(r, wait));
+      return generateOneCF(theme, accountId, token, attempt + 1);
+    }
+    throw new Error(`Cloudflare AI ${res.status}: ${body.slice(0, 400)}`);
+  }
+  const data = await res.json();
+  if (!data.result?.image) throw new Error('Respuesta sin imagen: ' + JSON.stringify(data).slice(0, 300));
+  return Buffer.from(data.result.image, 'base64');
+}
+
 // Post-procesa: escala de grises → threshold → negro puro sobre blanco puro.
 // Elimina grises/sombras que la IA pueda meter y garantiza impresión limpia.
 async function toCleanLineArt(buffer, targetPx = 2100) {
@@ -73,16 +96,22 @@ async function main() {
   const theme = process.argv[2];
   const count = parseInt(process.argv[3] || '5', 10);
   const outDir = process.argv[4] || path.join(__dirname, '..', 'output', 'ai-png');
+  const provider = process.env.AI_PROVIDER || 'gemini';
   const apiKey = process.env.GEMINI_API_KEY;
+  const cfAccount = process.env.CF_ACCOUNT_ID;
+  const cfToken = process.env.CF_API_TOKEN;
 
   if (!theme) { console.error('Falta el tema. Uso: node src/ai-generate.js "<tema>" <cantidad>'); process.exit(1); }
-  if (!apiKey) { console.error('Falta GEMINI_API_KEY en el entorno.'); process.exit(1); }
+  if (provider === 'gemini' && !apiKey) { console.error('Falta GEMINI_API_KEY en el entorno.'); process.exit(1); }
+  if (provider === 'cloudflare' && (!cfAccount || !cfToken)) { console.error('Faltan CF_ACCOUNT_ID y/o CF_API_TOKEN.'); process.exit(1); }
 
   fs.mkdirSync(outDir, { recursive: true });
 
   for (let i = 0; i < count; i++) {
     process.stdout.write(`Generando ${i + 1}/${count} ("${theme}")... `);
-    const raw = await generateOne(theme, apiKey);
+    const raw = provider === 'cloudflare'
+      ? await generateOneCF(theme, cfAccount, cfToken)
+      : await generateOne(theme, apiKey);
     const clean = await toCleanLineArt(raw);
     const file = path.join(outDir, `page-${String(i + 1).padStart(3, '0')}.png`);
     fs.writeFileSync(file, clean);
@@ -95,4 +124,4 @@ async function main() {
 
 if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });
 
-module.exports = { generateOne, toCleanLineArt };
+module.exports = { generateOne, generateOneCF, toCleanLineArt };

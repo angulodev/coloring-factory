@@ -14,7 +14,7 @@ on:
       source:
         description: 'Fuente de las imágenes'
         type: choice
-        options: [procedural, ai, manual]
+        options: [procedural, ai, ai-free, manual]
         default: procedural
       theme:
         description: 'Tema (solo para source=ai). Ej: "mandala de lobo", "bosque encantado estilo mandala"'
@@ -38,6 +38,14 @@ jobs:
 
       - run: npm ci
 
+      - name: Generar imágenes con IA gratis (Cloudflare)
+        if: inputs.source == 'ai-free'
+        env:
+          AI_PROVIDER: cloudflare
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: node src/ai-generate.js "${{ inputs.theme }}" "${{ inputs.pages }}" output/ai-png
+
       - name: Generar imágenes con IA
         if: inputs.source == 'ai'
         env:
@@ -45,7 +53,7 @@ jobs:
         run: node src/ai-generate.js "${{ inputs.theme }}" "${{ inputs.pages }}" output/ai-png
 
       - name: Armar libro (modo IA)
-        if: inputs.source == 'ai'
+        if: inputs.source == 'ai' || inputs.source == 'ai-free'
         run: node src/build-book.js "${{ inputs.title }}" "${{ inputs.pages }}" 0 output/ai-png
 
       - name: Limpiar imágenes manuales

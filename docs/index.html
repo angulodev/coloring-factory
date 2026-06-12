@@ -172,6 +172,16 @@
   <p class="hint">Dispara el workflow. En ~1 minuto tu PDF queda en los artifacts del run.</p>
   <label for="title">Título del libro</label>
   <input type="text" id="title" placeholder="Ej: Gatos Mandala — Volumen 1">
+  <label for="mode">Fuente de las imágenes</label>
+  <select id="mode" onchange="toggleMode()" style="width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink)">
+    <option value="manual">Mis imágenes subidas (paso 2)</option>
+    <option value="ai-free">IA gratis en la nube (estilo simple)</option>
+  </select>
+  <div id="aiFields" style="display:none">
+    <label for="aiPages">Cantidad de páginas</label>
+    <input type="text" id="aiPages" value="10" inputmode="numeric">
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para dibujos simples (libros infantiles). Para máximo detalle, usa Gemini + subir imágenes.</p>
+  </div>
   <button onclick="generateBook()">Generar libro</button>
   <div class="status" id="genStatus"></div>
 </section>
@@ -335,14 +345,27 @@ async function clearRepoFolder() {
 }
 
 // --- paso 3: generar ---
+function toggleMode() {
+  document.getElementById('aiFields').style.display =
+    document.getElementById('mode').value === 'ai-free' ? 'block' : 'none';
+}
 async function generateBook() {
   if (needPat('genStatus')) return;
   const title = document.getElementById('title').value.trim() || 'Libro para Colorear';
+  const mode = document.getElementById('mode').value;
+  const inputs = { title, pages: '999', source: 'manual' };
+  if (mode === 'ai-free') {
+    const theme = document.getElementById('theme').value.trim();
+    if (!theme) return show('genStatus', 'err', 'Para IA gratis, escribe el tema en el paso 1 primero.');
+    inputs.source = 'ai-free';
+    inputs.theme = theme;
+    inputs.pages = document.getElementById('aiPages').value.trim() || '10';
+  }
   show('genStatus', 'info', 'Disparando workflow…');
   try {
     const res = await fetch(`${API}/actions/workflows/generate-book.yml/dispatches`, {
       method: 'POST', headers: headers(),
-      body: JSON.stringify({ ref: 'main', inputs: { title, pages: '999', source: 'manual' } }),
+      body: JSON.stringify({ ref: 'main', inputs }),
     });
     if (res.status !== 204) throw new Error('HTTP ' + res.status);
     show('genStatus', 'info', 'Workflow corriendo… verificando estado ⏳');
