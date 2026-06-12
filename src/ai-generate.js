@@ -1,0 +1,88 @@
+// Genera páginas para colorear usando la API de Gemini (imagen) y las
+// post-procesa a línea negra pura sobre blanco, lista para impresión.
+//
+// Uso: GEMINI_API_KEY=... node src/ai-generate.js "<tema>" <cantidad> [outDir]
+// Ej:  node src/ai-generate.js "mandala de lobo" 10 output/ai-png
+
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
+
+const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash-image';
+const API = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+
+const PROMPT_TEMPLATE = (theme) => `Intricate coloring book page: ${theme}.
+STYLE REQUIREMENTS:
+- Pure black line art on a plain white background
+- NO shading, NO gray tones, NO color, NO gradients
+- Clean, closed outlines suitable for coloring with pencils
+- Highly detailed, ornate, mandala-level intricacy
+- Full-page composition, centered, with decorative border elements
+- Square format`;
+
+async function generateOne(theme, apiKey, attempt = 1) {
+  const res = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: PROMPT_TEMPLATE(theme) }] }],
+      generationConfig: { responseModalities: ['IMAGE'] },
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    if ((res.status === 429 || res.status >= 500) && attempt <= 3) {
+      const wait = attempt * 15000;
+      console.log(`  Rate limit/error ${res.status}, reintentando en ${wait / 1000}s...`);
+      await new Promise((r) => setTimeout(r, wait));
+      return generateOne(theme, apiKey, attempt + 1);
+    }
+    throw new Error(`Gemini API ${res.status}: ${body.slice(0, 300)}`);
+  }
+
+  const data = await res.json();
+  const part = (data.candidates?.[0]?.content?.parts || []).find((p) => p.inlineData?.data);
+  if (!part) throw new Error('La respuesta no contiene imagen: ' + JSON.stringify(data).slice(0, 300));
+  return Buffer.from(part.inlineData.data, 'base64');
+}
+
+// Post-procesa: escala de grises → threshold → negro puro sobre blanco puro.
+// Elimina grises/sombras que la IA pueda meter y garantiza impresión limpia.
+async function toCleanLineArt(buffer, targetPx = 2100) {
+  return sharp(buffer)
+    .resize(targetPx, targetPx, { fit: 'contain', background: 'white' })
+    .flatten({ background: 'white' })
+    .grayscale()
+    .threshold(190) // >190 → blanco, <=190 → negro. Ajustable.
+    .png()
+    .toBuffer();
+}
+
+async function main() {
+  const theme = process.argv[2];
+  const count = parseInt(process.argv[3] || '5', 10);
+  const outDir = process.argv[4] || path.join(__dirname, '..', 'output', 'ai-png');
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!theme) { console.error('Falta el tema. Uso: node src/ai-generate.js "<tema>" <cantidad>'); process.exit(1); }
+  if (!apiKey) { console.error('Falta GEMINI_API_KEY en el entorno.'); process.exit(1); }
+
+  fs.mkdirSync(outDir, { recursive: true });
+
+  for (let i = 0; i < count; i++) {
+    process.stdout.write(`Generando ${i + 1}/${count} ("${theme}")... `);
+    const raw = await generateOne(theme, apiKey);
+    const clean = await toCleanLineArt(raw);
+    const file = path.join(outDir, `page-${String(i + 1).padStart(3, '0')}.png`);
+    fs.writeFileSync(file, clean);
+    console.log('✓');
+    // Pausa corta para no golpear rate limits del free tier
+    await new Promise((r) => setTimeout(r, 4000));
+  }
+  console.log(`✓ ${count} páginas en ${outDir}`);
+}
+
+if (require.main === module) main().catch((e) => { console.error(e); process.exit(1); });
+
+module.exports = { generateOne, toCleanLineArt };

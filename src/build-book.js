@@ -12,9 +12,17 @@ const PAGE_W = 612;  // 8.5in * 72
 const PAGE_H = 792;  // 11in * 72
 const MARGIN = 54;   // 0.75in (margen seguro KDP)
 
-async function buildBook({ title, pages, seedBase, outDir }) {
+async function buildBook({ title, pages, seedBase, outDir, imagesDir }) {
   fs.mkdirSync(outDir, { recursive: true });
-  fs.mkdirSync(path.join(outDir, 'svg'), { recursive: true });
+  if (!imagesDir) fs.mkdirSync(path.join(outDir, 'svg'), { recursive: true });
+
+  // Modo IA: usar PNGs pre-generados en vez de mandalas procedurales
+  let aiImages = [];
+  if (imagesDir) {
+    aiImages = fs.readdirSync(imagesDir).filter((f) => f.endsWith('.png')).sort();
+    if (aiImages.length === 0) throw new Error(`No hay PNGs en ${imagesDir}`);
+    pages = Math.min(pages, aiImages.length) || aiImages.length;
+  }
 
   const pdf = await PDFDocument.create();
   const font = await pdf.embedFont(StandardFonts.HelveticaBold);
@@ -35,13 +43,16 @@ async function buildBook({ title, pages, seedBase, outDir }) {
   pdf.addPage([PAGE_W, PAGE_H]); // reverso en blanco
 
   for (let i = 0; i < pages; i++) {
-    const seed = seedBase + i;
-    const svg = generateMandala({ seed });
-    fs.writeFileSync(path.join(outDir, 'svg', `mandala-${String(i + 1).padStart(3, '0')}.svg`), svg);
-
-    // Rasterizar a 300 DPI sobre el área útil de la página
-    const targetPx = Math.round(((PAGE_W - MARGIN * 2) / 72) * 300);
-    const png = new Resvg(svg, { fitTo: { mode: 'width', value: targetPx } }).render().asPng();
+    let png;
+    if (imagesDir) {
+      png = fs.readFileSync(path.join(imagesDir, aiImages[i]));
+    } else {
+      const seed = seedBase + i;
+      const svg = generateMandala({ seed });
+      fs.writeFileSync(path.join(outDir, 'svg', `mandala-${String(i + 1).padStart(3, '0')}.svg`), svg);
+      const targetPx = Math.round(((PAGE_W - MARGIN * 2) / 72) * 300);
+      png = new Resvg(svg, { fitTo: { mode: 'width', value: targetPx } }).render().asPng();
+    }
 
     const img = await pdf.embedPng(png);
     const page = pdf.addPage([PAGE_W, PAGE_H]);
@@ -66,12 +77,13 @@ async function buildBook({ title, pages, seedBase, outDir }) {
   return outPath;
 }
 
-// CLI: node src/build-book.js "Título" <páginas> <seed>
+// CLI: node src/build-book.js "Título" <páginas> <seed> [imagesDir]
 if (require.main === module) {
   const title = process.argv[2] || 'Mandalas para Colorear';
   const pages = parseInt(process.argv[3] || '10', 10);
   const seedBase = parseInt(process.argv[4] || '1000', 10);
-  buildBook({ title, pages, seedBase, outDir: path.join(__dirname, '..', 'output') })
+  const imagesDir = process.argv[5];
+  buildBook({ title, pages, seedBase, imagesDir, outDir: path.join(__dirname, '..', 'output') })
     .then((p) => console.log(`✓ Libro generado: ${p}`))
     .catch((e) => { console.error(e); process.exit(1); });
 }

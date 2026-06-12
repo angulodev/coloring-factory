@@ -8,12 +8,21 @@ on:
         required: true
         default: 'Mandalas para Colorear'
       pages:
-        description: 'Cantidad de mandalas'
+        description: 'Cantidad de páginas'
         required: true
         default: '50'
+      source:
+        description: 'Fuente de las imágenes'
+        type: choice
+        options: [procedural, ai]
+        default: procedural
+      theme:
+        description: 'Tema (solo para source=ai). Ej: "mandala de lobo", "bosque encantado estilo mandala"'
+        required: false
+        default: 'mandala floral intrincado'
       seed:
-        description: 'Seed base (cambia esto entre volúmenes)'
-        required: true
+        description: 'Seed base (solo procedural; cambia entre volúmenes)'
+        required: false
         default: '1000'
 
 jobs:
@@ -29,14 +38,23 @@ jobs:
 
       - run: npm ci
 
-      - name: Generar libro
+      - name: Generar imágenes con IA
+        if: inputs.source == 'ai'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: node src/ai-generate.js "${{ inputs.theme }}" "${{ inputs.pages }}" output/ai-png
+
+      - name: Armar libro (modo IA)
+        if: inputs.source == 'ai'
+        run: node src/build-book.js "${{ inputs.title }}" "${{ inputs.pages }}" 0 output/ai-png
+
+      - name: Armar libro (modo procedural)
+        if: inputs.source == 'procedural'
         run: node src/build-book.js "${{ inputs.title }}" "${{ inputs.pages }}" "${{ inputs.seed }}"
 
       - name: Subir PDF como artifact
         uses: actions/upload-artifact@v4
         with:
-          name: libro-${{ inputs.seed }}
-          path: |
-            output/interior.pdf
-            output/svg/
+          name: libro-${{ inputs.source }}-${{ github.run_number }}
+          path: output/
           retention-days: 30
