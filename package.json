@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
+    "libsodium-wrappers": "^0.8.4",
     "pdf-lib": "^1.17.1",
     "sharp": "^0.35.1"
   }

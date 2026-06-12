@@ -20,10 +20,14 @@ STYLE REQUIREMENTS:
 - Full-page composition, centered, with decorative border elements
 - Square format`;
 
-async function generateOne(theme, apiKey, attempt = 1) {
+async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authMode === 'goog') headers['x-goog-api-key'] = apiKey;
+  else headers['Authorization'] = `Bearer ${apiKey}`;
+
   const res = await fetch(API, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+    headers,
     body: JSON.stringify({
       contents: [{ parts: [{ text: PROMPT_TEMPLATE(theme) }] }],
       generationConfig: { responseModalities: ['IMAGE'] },
@@ -32,13 +36,18 @@ async function generateOne(theme, apiKey, attempt = 1) {
 
   if (!res.ok) {
     const body = await res.text();
+    // Auth keys nuevas (AQ.*) pueden requerir Bearer: probar el otro modo
+    if ((res.status === 401 || res.status === 403) && authMode === 'goog') {
+      console.log(`  Auth ${res.status} con x-goog-api-key, probando Authorization Bearer...`);
+      return generateOne(theme, apiKey, attempt, 'bearer');
+    }
     if ((res.status === 429 || res.status >= 500) && attempt <= 3) {
       const wait = attempt * 15000;
       console.log(`  Rate limit/error ${res.status}, reintentando en ${wait / 1000}s...`);
       await new Promise((r) => setTimeout(r, wait));
-      return generateOne(theme, apiKey, attempt + 1);
+      return generateOne(theme, apiKey, attempt + 1, authMode);
     }
-    throw new Error(`Gemini API ${res.status}: ${body.slice(0, 300)}`);
+    throw new Error(`Gemini API ${res.status} (auth=${authMode}): ${body.slice(0, 400)}`);
   }
 
   const data = await res.json();
