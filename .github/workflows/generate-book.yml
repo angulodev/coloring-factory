@@ -14,7 +14,7 @@ on:
       source:
         description: 'Fuente de las imágenes'
         type: choice
-        options: [procedural, ai]
+        options: [procedural, ai, manual]
         default: procedural
       theme:
         description: 'Tema (solo para source=ai). Ej: "mandala de lobo", "bosque encantado estilo mandala"'
@@ -47,6 +47,14 @@ jobs:
       - name: Armar libro (modo IA)
         if: inputs.source == 'ai'
         run: node src/build-book.js "${{ inputs.title }}" "${{ inputs.pages }}" 0 output/ai-png
+
+      - name: Limpiar imágenes manuales
+        if: inputs.source == 'manual'
+        run: node src/prepare-images.js input-images output/clean-png
+
+      - name: Armar libro (modo manual)
+        if: inputs.source == 'manual'
+        run: node src/build-book.js "${{ inputs.title }}" "999" 0 output/clean-png
 
       - name: Armar libro (modo procedural)
         if: inputs.source == 'procedural'
