@@ -1,0 +1,42 @@
+name: Generar libro
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Título del libro'
+        required: true
+        default: 'Mandalas para Colorear'
+      pages:
+        description: 'Cantidad de mandalas'
+        required: true
+        default: '50'
+      seed:
+        description: 'Seed base (cambia esto entre volúmenes)'
+        required: true
+        default: '1000'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generar libro
+        run: node src/build-book.js "${{ inputs.title }}" "${{ inputs.pages }}" "${{ inputs.seed }}"
+
+      - name: Subir PDF como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: libro-${{ inputs.seed }}
+          path: |
+            output/interior.pdf
+            output/svg/
+          retention-days: 30
