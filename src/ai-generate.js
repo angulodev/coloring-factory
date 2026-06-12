@@ -15,10 +15,11 @@ const PROMPT_TEMPLATE = (theme) => `Intricate coloring book page: ${theme}.
 STYLE REQUIREMENTS:
 - Pure black line art on a plain white background
 - NO shading, NO gray tones, NO color, NO gradients
-- Clean, closed outlines suitable for coloring with pencils
+- NO text, NO words, NO letters, NO signature, NO watermark
+- Clean, closed outlines with medium-bold line weight (thin lines disappear in print)
 - Highly detailed, ornate, mandala-level intricacy
-- Full-page composition, centered, with decorative border elements
-- Square format`;
+- Centered composition with comfortable white margin around the edges
+- Vertical portrait format (3:4), like a book page`;
 
 async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
   const headers = { 'Content-Type': 'application/json' };
@@ -60,7 +61,7 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
 // Elimina grises/sombras que la IA pueda meter y garantiza impresión limpia.
 async function toCleanLineArt(buffer, targetPx = 2100) {
   return sharp(buffer)
-    .resize(targetPx, targetPx, { fit: 'contain', background: 'white' })
+    .resize({ width: targetPx, height: Math.round(targetPx * 1.33), fit: 'inside', background: 'white' })
     .flatten({ background: 'white' })
     .grayscale()
     .threshold(190) // >190 → blanco, <=190 → negro. Ajustable.

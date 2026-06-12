@@ -56,12 +56,16 @@ async function buildBook({ title, pages, seedBase, outDir, imagesDir }) {
 
     const img = await pdf.embedPng(png);
     const page = pdf.addPage([PAGE_W, PAGE_H]);
-    const size = PAGE_W - MARGIN * 2;
+    // Escalar preservando proporción dentro del área útil
+    const maxW = PAGE_W - MARGIN * 2;
+    const maxH = PAGE_H - MARGIN * 2 - 20; // espacio para el número de página
+    const scale = Math.min(maxW / img.width, maxH / img.height);
+    const w = img.width * scale, h = img.height * scale;
     page.drawImage(img, {
-      x: MARGIN,
-      y: (PAGE_H - size) / 2,
-      width: size,
-      height: size,
+      x: (PAGE_W - w) / 2,
+      y: (PAGE_H - h) / 2,
+      width: w,
+      height: h,
     });
     // Número de página discreto
     const label = String(i + 1);
