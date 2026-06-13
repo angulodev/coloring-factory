@@ -26,6 +26,10 @@ on:
         description: 'Cantidad de diseños (solo para ai-free)'
         required: false
         default: '10'
+      line_threshold:
+        description: 'Grosor de línea IA (60=fino, 110=medio, 160=grueso)'
+        required: false
+        default: '110'
       palette:
         description: 'Paleta de la portada'
         type: choice
@@ -53,6 +57,7 @@ jobs:
           AI_PROVIDER: cloudflare
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          LINE_THRESHOLD: ${{ inputs.line_threshold }}
         run: node src/ai-generate.js "${{ inputs.theme }}" "${{ inputs.pages }}" output/clean-png
 
       - name: Preparar imágenes subidas

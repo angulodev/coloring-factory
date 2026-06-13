@@ -58,9 +58,10 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
 }
 
 // Prompt para el proveedor gratis: escenas completas, estilo simple con anatomía correcta
-const PROMPT_TEMPLATE_SIMPLE = (theme) => `Ornamental coloring page design: ${theme}.
-A decorative symmetrical mandala pattern that fills the whole page edge to edge, made of geometric shapes, flowers, leaves and swirls.
-Black outlines on white background, medium-thick clean lines, no shading, no gray, no color, no filled black areas, all outlines closed for easy coloring. No text, no letters, no watermark.`;
+const PROMPT_TEMPLATE_SIMPLE = (theme) => `Simple line-art mandala coloring page: ${theme}.
+THIN delicate black outlines on a mostly white background, like a coloring book for adults.
+Large open white spaces between the lines so each area can be colored. Minimal detail, airy and clean, not dense.
+Only thin even outlines, NO thick strokes, NO black filled areas, NO shading, NO gray, NO solid shapes. Symmetrical, centered. No text, no watermark.`;
 
 // --- Proveedor alternativo: Cloudflare Workers AI (FLUX Schnell, free tier diario) ---
 async function generateOneCF(theme, accountId, token, attempt = 1) {
@@ -104,11 +105,16 @@ async function generateOneCF(theme, accountId, token, attempt = 1) {
 // Post-procesa: escala de grises → threshold → negro puro sobre blanco puro.
 // Elimina grises/sombras que la IA pueda meter y garantiza impresión limpia.
 async function toCleanLineArt(buffer, targetPx = 2100) {
+  // THRESHOLD: pixeles más oscuros que este valor → negro; el resto → blanco.
+  // Más BAJO = menos negro / líneas más finas. Más ALTO = más negro / líneas gruesas.
+  // Configurable con LINE_THRESHOLD (default 110, antes 190 que engordaba demasiado).
+  const th = parseInt(process.env.LINE_THRESHOLD || '110', 10);
   return sharp(buffer)
     .resize({ width: targetPx, height: Math.round(targetPx * 1.33), fit: 'inside', background: 'white' })
     .flatten({ background: 'white' })
     .grayscale()
-    .threshold(190) // >190 → blanco, <=190 → negro. Ajustable.
+    .normalise()        // estira el contraste para separar líneas del fondo
+    .threshold(th)
     .png()
     .toBuffer();
 }
