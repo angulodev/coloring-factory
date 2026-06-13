@@ -1,0 +1,52 @@
+name: Generar portada
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Título del libro'
+        required: true
+      subtitle:
+        description: 'Subtítulo (ej: 50 diseños únicos para relajarte)'
+        required: false
+        default: ''
+      author:
+        description: 'Autor'
+        required: true
+      pages:
+        description: 'Páginas interiores del libro (para calcular el lomo)'
+        required: true
+        default: '102'
+      palette:
+        description: 'Paleta de colores'
+        type: choice
+        options: [sunset, ocean, tropical, berry, noir]
+        default: sunset
+      seed:
+        description: 'Seed del mandala de portada'
+        required: false
+        default: '42'
+      description:
+        description: 'Texto de la contraportada'
+        required: false
+        default: 'Desconecta del estrés y sumérgete en horas de relajación creativa con diseños únicos llenos de detalle, listos para llenar de color.'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Generar portada
+        run: node src/cover.js "${{ inputs.title }}" "${{ inputs.subtitle }}" "${{ inputs.author }}" "${{ inputs.pages }}" "${{ inputs.palette }}" "${{ inputs.seed }}" "${{ inputs.description }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portada-${{ github.run_number }}
+          path: |
+            output/cover.pdf
+            output/cover-preview.png
+          retention-days: 30
