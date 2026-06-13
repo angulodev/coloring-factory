@@ -175,12 +175,12 @@
   <label for="mode">Fuente de las imágenes</label>
   <select id="mode" onchange="toggleMode()" style="width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink)">
     <option value="manual">Mis imágenes subidas (paso 2)</option>
-    <option value="ai-free">IA gratis en la nube (estilo simple)</option>
+    <option value="ai-free">IA gratis en la nube (mandalas y patrones)</option>
   </select>
   <div id="aiFields" style="display:none">
     <label for="aiPages">Cantidad de páginas</label>
     <input type="text" id="aiPages" value="10" inputmode="numeric">
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para dibujos simples (libros infantiles). Para máximo detalle, usa Gemini + subir imágenes.</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para mandalas, patrones y formas (ej: \"mandala de flores y hojas\"). Para animales o personajes, usa Gemini + subir imágenes (paso 2).</p>
   </div>
   <button onclick="generateBook()">Generar libro</button>
   <div class="status" id="genStatus"></div>

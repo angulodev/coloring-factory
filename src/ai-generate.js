@@ -58,12 +58,11 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
 }
 
 // Prompt para el proveedor gratis: escenas completas, estilo simple con anatomía correcta
-const PROMPT_TEMPLATE_SIMPLE = (theme) => `Full-page coloring book illustration for children: ${theme}.
-COMPOSITION: a complete scene that fills the ENTIRE page edge to edge — large main subject in the center PLUS background elements (sky, clouds, trees, plants, flowers, ground details) so that every part of the page has shapes to color. No large empty white areas.
+const PROMPT_TEMPLATE_SIMPLE = (theme) => `Ornamental full-page coloring book design: ${theme}.
+COMPOSITION: a decorative pattern that fills the ENTIRE page edge to edge — symmetrical mandala or ornamental arrangement of geometric shapes, flowers, leaves, swirls and abstract motifs, so that every part of the page has regions to color. No large empty white areas, no realistic creatures or human figures.
 STYLE:
 - Pure black uniform outlines on white background, medium-thick lines
 - NO shading, NO gray tones, NO color, NO solid black filled areas
-- Cute simple cartoon style with CORRECT anatomy and natural proportions
 - All outlines closed, forming clear regions easy to color
 - NO text, NO letters, NO watermark, NO signature`;
 
