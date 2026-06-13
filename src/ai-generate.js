@@ -58,13 +58,9 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
 }
 
 // Prompt para el proveedor gratis: escenas completas, estilo simple con anatomía correcta
-const PROMPT_TEMPLATE_SIMPLE = (theme) => `Ornamental full-page coloring book design: ${theme}.
-COMPOSITION: a decorative pattern that fills the ENTIRE page edge to edge — symmetrical mandala or ornamental arrangement of geometric shapes, flowers, leaves, swirls and abstract motifs, so that every part of the page has regions to color. No large empty white areas, no realistic creatures or human figures.
-STYLE:
-- Pure black uniform outlines on white background, medium-thick lines
-- NO shading, NO gray tones, NO color, NO solid black filled areas
-- All outlines closed, forming clear regions easy to color
-- NO text, NO letters, NO watermark, NO signature`;
+const PROMPT_TEMPLATE_SIMPLE = (theme) => `Ornamental coloring page design: ${theme}.
+A decorative symmetrical mandala pattern that fills the whole page edge to edge, made of geometric shapes, flowers, leaves and swirls.
+Black outlines on white background, medium-thick clean lines, no shading, no gray, no color, no filled black areas, all outlines closed for easy coloring. No text, no letters, no watermark.`;
 
 // --- Proveedor alternativo: Cloudflare Workers AI (FLUX Schnell, free tier diario) ---
 async function generateOneCF(theme, accountId, token, attempt = 1) {
@@ -76,6 +72,22 @@ async function generateOneCF(theme, accountId, token, attempt = 1) {
   });
   if (!res.ok) {
     const body = await res.text();
+    // Falso positivo del filtro NSFW de FLUX (code 3030): reintentar con prompt geométrico neutro
+    if (res.status === 400 && body.includes('3030') && attempt <= 3) {
+      console.log(`  Filtro NSFW (falso positivo), reintentando con prompt neutro [${attempt}/3]...`);
+      const neutralPrompt = `Symmetrical decorative mandala coloring page with geometric shapes, petals and swirls. Black line art on white background, clean closed outlines, no shading, no color.`;
+      const retry = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ prompt: neutralPrompt, steps: 8 }),
+      });
+      if (retry.ok) {
+        const d = await retry.json();
+        if (d.result && d.result.image) return Buffer.from(d.result.image, 'base64');
+      }
+      await new Promise((r) => setTimeout(r, 3000));
+      return generateOneCF(theme, accountId, token, attempt + 1);
+    }
     if ((res.status === 429 || res.status >= 500) && attempt <= 3) {
       const wait = attempt * 15000;
       console.log(`  Rate limit/error ${res.status}, reintentando en ${wait / 1000}s...`);
