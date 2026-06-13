@@ -1,0 +1,50 @@
+name: Procesar storybook
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Título del libro'
+        required: true
+      subtitle:
+        description: 'Subtítulo'
+        required: false
+        default: ''
+      author:
+        description: 'Autor'
+        required: true
+      palette:
+        description: 'Paleta de la portada'
+        type: choice
+        options: [sunset, ocean, tropical, berry, noir]
+        default: sunset
+      description:
+        description: 'Texto de la contraportada'
+        required: false
+        default: 'Una historia para disfrutar y compartir, llena de color y momentos para atesorar.'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Procesar storybook y generar portada
+        run: |
+          PDF=$(ls input-book/*.pdf | head -1)
+          echo "Procesando: $PDF"
+          SEED=$((RANDOM % 100000))
+          node src/storybook.js "$PDF" "${{ inputs.title }}" "${{ inputs.subtitle }}" "${{ inputs.author }}" "${{ inputs.palette }}" "$SEED" "${{ inputs.description }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-kdp-${{ github.run_number }}
+          path: |
+            output/interior.pdf
+            output/cover.pdf
+            output/cover-preview.png
+            output/notas.txt
+          retention-days: 30
