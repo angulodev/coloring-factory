@@ -13,7 +13,7 @@
     --ink: #1C1B19;
     --ink-soft: #6B6862;
     --line: #D9D6CF;
-    --pencil: #E8634A;      /* lápiz coral */
+    --pencil: #E8634A;
     --pencil-soft: #FCEAE5;
     --pencil-green: #3E8E6B;
     --pencil-green-soft: #E4F1EA;
@@ -22,32 +22,21 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.55;
-    padding-bottom: 80px;
+    background: var(--paper); color: var(--ink);
+    line-height: 1.55; padding-bottom: 80px;
   }
   .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
 
-  /* ---------- Header ---------- */
   header { padding: 36px 0 8px; }
   header .mandala { width: 72px; height: 72px; display:block; margin-bottom: 14px; }
   header .mandala .fill { fill: var(--pencil); opacity: 0; transition: opacity .6s ease; }
   header .mandala .fill.on { opacity: 1; }
-  h1 {
-    font-family: 'Fraunces', serif; font-weight: 700;
-    font-size: clamp(28px, 7vw, 38px); letter-spacing: -0.5px;
-  }
+  h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: clamp(28px, 7vw, 38px); letter-spacing: -0.5px; }
   header p { color: var(--ink-soft); font-size: 14.5px; margin-top: 4px; max-width: 46ch; }
 
-  /* ---------- Steps ---------- */
   .step {
-    border: 1.5px solid var(--ink);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-top: 22px;
-    background: var(--paper);
-    position: relative;
+    border: 1.5px solid var(--ink); border-radius: var(--radius);
+    padding: 20px; margin-top: 22px; background: var(--paper); position: relative;
   }
   .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
   .badge {
@@ -60,14 +49,19 @@
   .step.done .badge { background: var(--pencil); border-color: var(--pencil); color: #fff; }
   .step h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; }
   .step > p.hint { color: var(--ink-soft); font-size: 13.5px; margin: 2px 0 14px 46px; }
+  .tag {
+    font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase;
+    background: var(--paper-soft); border: 1px solid var(--line); border-radius: 99px;
+    padding: 3px 10px; color: var(--ink-soft); margin-left: auto; flex: none;
+  }
 
   label { display:block; font-size: 13px; font-weight: 600; margin: 14px 0 5px; }
-  input[type=text], input[type=password], textarea {
+  input[type=text], input[type=password], textarea, select {
     width: 100%; padding: 11px 13px; font: inherit; font-size: 15px;
     border: 1.5px solid var(--line); border-radius: 10px;
     background: var(--paper-soft); color: var(--ink); outline: none;
   }
-  input:focus, textarea:focus { border-color: var(--ink); background: var(--paper); }
+  input:focus, textarea:focus, select:focus { border-color: var(--ink); background: var(--paper); }
   textarea { resize: vertical; min-height: 70px; }
 
   button {
@@ -78,18 +72,17 @@
   }
   button:active { transform: scale(.97); }
   button.ghost { background: var(--paper); color: var(--ink); }
+  button.primary { background: var(--pencil); border-color: var(--pencil); width: 100%; padding: 14px; font-size: 16px; }
   button:disabled { opacity: .45; cursor: default; }
   .row { display: flex; gap: 10px; flex-wrap: wrap; }
 
   .promptbox {
     margin-top: 14px; padding: 14px; border-radius: 10px;
     background: var(--pencil-soft); border: 1.5px dashed var(--pencil);
-    font-size: 13.5px; white-space: pre-wrap; word-break: break-word;
-    display: none;
+    font-size: 13.5px; white-space: pre-wrap; word-break: break-word; display: none;
   }
   .promptbox.show { display: block; }
 
-  /* ---------- Upload ---------- */
   .drop {
     margin-top: 6px; border: 1.5px dashed var(--line); border-radius: 10px;
     padding: 22px; text-align: center; color: var(--ink-soft); font-size: 14px;
@@ -97,22 +90,15 @@
   }
   .drop.over { border-color: var(--pencil); background: var(--pencil-soft); }
   .thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .thumbs img {
-    width: 64px; height: 64px; object-fit: cover; border-radius: 8px;
-    border: 1.5px solid var(--line); background: #fff;
-  }
+  .thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; }
 
-  .status {
-    margin-top: 12px; font-size: 13.5px; padding: 10px 13px; border-radius: 10px; display: none;
-  }
+  .status { margin-top: 12px; font-size: 13.5px; padding: 10px 13px; border-radius: 10px; display: none; }
   .status.show { display: block; }
   .status.ok   { background: var(--pencil-green-soft); color: var(--pencil-green); }
   .status.err  { background: #FBE7E7; color: #B3413A; }
   .status.info { background: var(--paper-soft); color: var(--ink-soft); }
-
   .runlink { display: inline-block; margin-top: 10px; font-weight: 600; color: var(--pencil); }
 
-  /* ---------- Config ---------- */
   details.config { margin-top: 26px; border-top: 1.5px solid var(--line); padding-top: 16px; }
   details.config summary { cursor: pointer; font-size: 13.5px; color: var(--ink-soft); font-weight: 600; }
   footer { margin-top: 40px; font-size: 12.5px; color: var(--ink-soft); }
@@ -122,7 +108,6 @@
 <div class="wrap">
 
 <header>
-  <!-- Mandala que se va pintando: 3 anillos = 3 pasos -->
   <svg class="mandala" viewBox="0 0 100 100" aria-hidden="true">
     <g stroke="#1C1B19" stroke-width="2" fill="none">
       <circle class="fill" id="ring3" cx="50" cy="50" r="44" stroke="none"/>
@@ -135,16 +120,18 @@
     </g>
   </svg>
   <h1>Coloring Factory</h1>
-  <p>Describe tu idea, genera las imágenes en Gemini, súbelas aquí y recibe tu libro listo para KDP.</p>
+  <p>De la idea al paquete KDP completo — interior, portada y diseños — en un toque.</p>
 </header>
 
 <!-- PASO 1 -->
 <section class="step" id="step1">
-  <div class="step-head"><div class="badge">1</div><h2>Crea el prompt</h2></div>
-  <p class="hint">Describe el tema en tus palabras. Te armo el prompt optimizado para línea limpia.</p>
-  <label for="theme">Tema del libro</label>
-  <textarea id="theme" placeholder="Ej: gatos jugando entre flores, estilo mandala"></textarea>
-  <button onclick="buildPrompt()">Generar prompt</button>
+  <div class="step-head"><div class="badge">1</div><h2>El tema</h2></div>
+  <p class="hint">Describe la idea del libro. Sirve tanto para la IA gratis como para armar tu prompt de Gemini.</p>
+  <label for="theme">Tema</label>
+  <textarea id="theme" placeholder="Ej: mandala de flores tropicales y mariposas"></textarea>
+  <div class="row">
+    <button class="ghost" onclick="buildPrompt()">Crear prompt para Gemini</button>
+  </div>
   <div class="promptbox" id="promptOut"></div>
   <div class="row">
     <button class="ghost" id="copyBtn" style="display:none" onclick="copyPrompt()">Copiar prompt</button>
@@ -154,8 +141,8 @@
 
 <!-- PASO 2 -->
 <section class="step" id="step2">
-  <div class="step-head"><div class="badge">2</div><h2>Sube las imágenes</h2></div>
-  <p class="hint">Las imágenes que generaste en Gemini. Se suben a la carpeta input-images/ del repo.</p>
+  <div class="step-head"><div class="badge">2</div><h2>Tus imágenes</h2><span class="tag">opcional</span></div>
+  <p class="hint">Solo si vas a usar imágenes de Gemini. Si eliges «IA gratis» en el paso 3, salta este paso.</p>
   <div class="drop" id="drop">Toca para elegir imágenes<br><span style="font-size:12px">(o arrástralas aquí)</span></div>
   <input type="file" id="fileInput" accept="image/*" multiple hidden>
   <div class="thumbs" id="thumbs"></div>
@@ -168,38 +155,28 @@
 
 <!-- PASO 3 -->
 <section class="step" id="step3">
-  <div class="step-head"><div class="badge">3</div><h2>Genera el libro</h2></div>
-  <p class="hint">Dispara el workflow. En ~1 minuto tu PDF queda en los artifacts del run.</p>
-  <label for="title">Título del libro</label>
-  <input type="text" id="title" placeholder="Ej: Gatos Mandala — Volumen 1">
+  <div class="step-head"><div class="badge">3</div><h2>Genera el paquete</h2></div>
+  <p class="hint">Interior + portada listos para KDP en un solo toque.</p>
+
   <label for="mode">Fuente de las imágenes</label>
-  <select id="mode" onchange="toggleMode()" style="width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink)">
+  <select id="mode" onchange="toggleMode()">
     <option value="manual">Mis imágenes subidas (paso 2)</option>
     <option value="ai-free">IA gratis en la nube (mandalas y patrones)</option>
   </select>
   <div id="aiFields" style="display:none">
-    <label for="aiPages">Cantidad de páginas</label>
+    <label for="aiPages">Cantidad de diseños</label>
     <input type="text" id="aiPages" value="10" inputmode="numeric">
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para mandalas, patrones y formas (ej: \"mandala de flores y hojas\"). Para animales o personajes, usa Gemini + subir imágenes (paso 2).</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para mandalas, patrones y formas. Para animales o personajes, usa Gemini + paso 2.</p>
   </div>
-  <button onclick="generateBook()">Generar libro</button>
-  <div class="status" id="genStatus"></div>
-</section>
 
-<!-- PASO 4 -->
-<section class="step" id="step4">
-  <div class="step-head"><div class="badge">4</div><h2>Crea la portada</h2></div>
-  <p class="hint">Portada envolvente lista para KDP: contraportada, lomo calculado y zona de código de barras.</p>
   <label for="cTitle">Título</label>
   <input type="text" id="cTitle" placeholder="Ej: Mandalas Mágicos">
   <label for="cSubtitle">Subtítulo</label>
   <input type="text" id="cSubtitle" placeholder="Ej: 50 diseños únicos para relajarte">
   <label for="cAuthor">Autor</label>
   <input type="text" id="cAuthor" placeholder="Ej: Francisco & Estefani">
-  <label for="cDesigns">Cantidad de diseños del libro</label>
-  <input type="text" id="cDesigns" value="50" inputmode="numeric">
-  <label for="cPalette">Paleta</label>
-  <select id="cPalette" style="width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink)">
+  <label for="cPalette">Paleta de la portada</label>
+  <select id="cPalette">
     <option value="sunset">Sunset — coral y dorado</option>
     <option value="ocean">Ocean — azules y turquesa</option>
     <option value="tropical">Tropical — verdes y rosa</option>
@@ -207,9 +184,10 @@
     <option value="noir">Noir — elegante oscuro con dorado</option>
   </select>
   <label for="cDesc">Texto de la contraportada</label>
-  <textarea id="cDesc" placeholder="Descripción que vende: beneficio + qué incluye + para quién"></textarea>
-  <button onclick="generateCover()">Generar portada</button>
-  <div class="status" id="coverStatus"></div>
+  <textarea id="cDesc" placeholder="Beneficio emocional + qué incluye + para quién (regalo)"></textarea>
+
+  <button class="primary" onclick="generatePackage()">✨ Generar paquete completo</button>
+  <div class="status" id="genStatus"></div>
 </section>
 
 <details class="config">
@@ -228,22 +206,20 @@ const OWNER = 'angulodev', REPO = 'coloring-factory';
 const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
 let files = [];
 
-// --- decoración: pétalos del mandala del header ---
 (() => {
   const g = document.getElementById('petals');
   let d = '';
   for (let i = 0; i < 12; i++) {
     const a = (i * 30 - 90) * Math.PI / 180;
-    const x1 = 50 + 16 * Math.cos(a), y1 = 50 + 16 * Math.sin(a);
-    const x2 = 50 + 30 * Math.cos(a), y2 = 50 + 30 * Math.sin(a);
-    d += `M ${x1} ${y1} L ${x2} ${y2} `;
+    d += `M ${50 + 16 * Math.cos(a)} ${50 + 16 * Math.sin(a)} L ${50 + 30 * Math.cos(a)} ${50 + 30 * Math.sin(a)} `;
   }
   g.innerHTML = `<path d="${d}"/>`;
 })();
-function paintRing(n) { document.getElementById('ring' + n).classList.add('on'); }
-function markDone(n) { document.getElementById('step' + n).classList.add('done'); paintRing(n); }
+function markDone(n) {
+  document.getElementById('step' + n).classList.add('done');
+  document.getElementById('ring' + n).classList.add('on');
+}
 
-// --- helpers ---
 const pat = () => localStorage.getItem('cf_pat') || '';
 const headers = () => ({ 'Authorization': 'Bearer ' + pat(), 'Accept': 'application/vnd.github+json' });
 function show(id, cls, msg) {
@@ -256,55 +232,6 @@ function needPat(id) {
   return true;
 }
 
-// --- paso 4: portada ---
-async function generateCover() {
-  if (needPat('coverStatus')) return;
-  const t = document.getElementById('cTitle').value.trim();
-  const a = document.getElementById('cAuthor').value.trim();
-  if (!t || !a) return show('coverStatus', 'err', 'El título y el autor son obligatorios.');
-  const designs = parseInt(document.getElementById('cDesigns').value.trim() || '50', 10);
-  const pages = String(2 + designs * 2); // título + blanco + (diseño + reverso) x N
-  const inputs = {
-    title: t,
-    subtitle: document.getElementById('cSubtitle').value.trim(),
-    author: a,
-    pages,
-    palette: document.getElementById('cPalette').value,
-    seed: String(Math.floor(Math.random() * 100000)),
-  };
-  const desc = document.getElementById('cDesc').value.trim();
-  if (desc) inputs.description = desc;
-  show('coverStatus', 'info', 'Generando portada…');
-  try {
-    const res = await fetch(`${API}/actions/workflows/generate-cover.yml/dispatches`, {
-      method: 'POST', headers: headers(),
-      body: JSON.stringify({ ref: 'main', inputs }),
-    });
-    if (res.status !== 204) throw new Error('HTTP ' + res.status);
-    setTimeout(() => pollRunInto('coverStatus'), 8000);
-  } catch (e) {
-    show('coverStatus', 'err', 'No se pudo disparar: ' + e.message);
-  }
-}
-
-async function pollRunInto(target, tries = 0) {
-  try {
-    const res = await fetch(`${API}/actions/runs?per_page=1`, { headers: headers() });
-    const run = (await res.json()).workflow_runs[0];
-    if (run.status !== 'completed') {
-      if (tries > 30) return show(target, 'err', 'Tardó demasiado. Revisa el run en GitHub.');
-      show(target, 'info', `Estado: ${run.status}… ⏳`);
-      return setTimeout(() => pollRunInto(target, tries + 1), 8000);
-    }
-    if (run.conclusion === 'success') {
-      show(target, 'ok', `✓ ¡Lista! Descarga el PDF y el preview en los artifacts:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir run y descargar ↗</a>`);
-    } else {
-      show(target, 'err', `Terminó en «${run.conclusion}». <a class="runlink" href="${run.html_url}" target="_blank">Ver logs ↗</a>`);
-    }
-  } catch (e) { show(target, 'err', 'Error consultando estado: ' + e.message); }
-}
-
-// --- config ---
 function savePat() {
   const v = document.getElementById('pat').value.trim();
   if (!v) return show('patStatus', 'err', 'Pega el token primero.');
@@ -313,7 +240,7 @@ function savePat() {
 }
 if (pat()) document.getElementById('pat').value = '••••••••••••';
 
-// --- paso 1: prompt ---
+// --- paso 1 ---
 function buildPrompt() {
   const theme = document.getElementById('theme').value.trim();
   if (!theme) return;
@@ -338,7 +265,7 @@ function copyPrompt() {
   setTimeout(() => document.getElementById('copyBtn').textContent = 'Copiar prompt', 1600);
 }
 
-// --- paso 2: imágenes ---
+// --- paso 2 ---
 const drop = document.getElementById('drop'), fileInput = document.getElementById('fileInput');
 drop.onclick = () => fileInput.click();
 drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
@@ -367,7 +294,6 @@ function toB64(file) {
 }
 
 async function putFile(path, contentB64, message) {
-  // si existe, necesitamos su sha
   let sha;
   const check = await fetch(`${API}/contents/${path}`, { headers: headers() });
   if (check.ok) sha = (await check.json()).sha;
@@ -418,48 +344,59 @@ async function clearRepoFolder() {
   }
 }
 
-// --- paso 3: generar ---
+// --- paso 3: paquete completo ---
 function toggleMode() {
   document.getElementById('aiFields').style.display =
     document.getElementById('mode').value === 'ai-free' ? 'block' : 'none';
 }
-async function generateBook() {
+
+async function generatePackage() {
   if (needPat('genStatus')) return;
-  const title = document.getElementById('title').value.trim() || 'Libro para Colorear';
+  const title = document.getElementById('cTitle').value.trim();
+  const author = document.getElementById('cAuthor').value.trim();
+  if (!title || !author) return show('genStatus', 'err', 'El título y el autor son obligatorios.');
+
   const mode = document.getElementById('mode').value;
-  const inputs = { title, pages: '999', source: 'manual' };
+  const inputs = {
+    title,
+    subtitle: document.getElementById('cSubtitle').value.trim(),
+    author,
+    source: mode,
+    palette: document.getElementById('cPalette').value,
+  };
   if (mode === 'ai-free') {
     const theme = document.getElementById('theme').value.trim();
-    if (!theme) return show('genStatus', 'err', 'Para IA gratis, escribe el tema en el paso 1 primero.');
-    inputs.source = 'ai-free';
+    if (!theme) return show('genStatus', 'err', 'Para IA gratis, escribe el tema en el paso 1.');
     inputs.theme = theme;
     inputs.pages = document.getElementById('aiPages').value.trim() || '10';
   }
-  show('genStatus', 'info', 'Disparando workflow…');
+  const desc = document.getElementById('cDesc').value.trim();
+  if (desc) inputs.description = desc;
+
+  show('genStatus', 'info', 'Generando tu paquete (imágenes + interior + portada)…');
   try {
-    const res = await fetch(`${API}/actions/workflows/generate-book.yml/dispatches`, {
+    const res = await fetch(`${API}/actions/workflows/generate-package.yml/dispatches`, {
       method: 'POST', headers: headers(),
       body: JSON.stringify({ ref: 'main', inputs }),
     });
     if (res.status !== 204) throw new Error('HTTP ' + res.status);
-    show('genStatus', 'info', 'Workflow corriendo… verificando estado ⏳');
-    setTimeout(pollRun, 8000);
+    setTimeout(() => pollRun(0), 8000);
   } catch (e) {
     show('genStatus', 'err', 'No se pudo disparar: ' + e.message + '. Revisa el permiso Actions (write) del token.');
   }
 }
 
-async function pollRun(tries = 0) {
+async function pollRun(tries) {
   try {
     const res = await fetch(`${API}/actions/runs?per_page=1`, { headers: headers() });
     const run = (await res.json()).workflow_runs[0];
     if (run.status !== 'completed') {
-      if (tries > 30) return show('genStatus', 'err', 'Tardó demasiado. Revisa el run en GitHub.');
+      if (tries > 40) return show('genStatus', 'err', 'Tardó demasiado. Revisa el run en GitHub.');
       show('genStatus', 'info', `Estado: ${run.status}… ⏳`);
       return setTimeout(() => pollRun(tries + 1), 8000);
     }
     if (run.conclusion === 'success') {
-      show('genStatus', 'ok', `✓ ¡Libro generado! Descarga el PDF en los artifacts del run:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir run y descargar ↗</a>`);
+      show('genStatus', 'ok', `✓ ¡Paquete KDP listo! Interior + portada + preview en los artifacts:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir run y descargar ↗</a>`);
       markDone(3);
     } else {
       show('genStatus', 'err', `El run terminó en «${run.conclusion}». <a class="runlink" href="${run.html_url}" target="_blank">Ver logs ↗</a>`);

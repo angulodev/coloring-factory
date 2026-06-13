@@ -1,0 +1,82 @@
+name: Generar paquete completo
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Título del libro'
+        required: true
+      subtitle:
+        description: 'Subtítulo'
+        required: false
+        default: ''
+      author:
+        description: 'Autor'
+        required: true
+      source:
+        description: 'Fuente de las imágenes'
+        type: choice
+        options: [ai-free, manual]
+        default: manual
+      theme:
+        description: 'Tema (solo para ai-free)'
+        required: false
+        default: 'mandala floral intrincado'
+      pages:
+        description: 'Cantidad de diseños (solo para ai-free)'
+        required: false
+        default: '10'
+      palette:
+        description: 'Paleta de la portada'
+        type: choice
+        options: [sunset, ocean, tropical, berry, noir]
+        default: sunset
+      description:
+        description: 'Texto de la contraportada'
+        required: false
+        default: 'Desconecta del estrés y sumérgete en horas de relajación creativa con diseños únicos llenos de detalle, listos para llenar de color.'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Generar imágenes con IA gratis
+        if: inputs.source == 'ai-free'
+        env:
+          AI_PROVIDER: cloudflare
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: node src/ai-generate.js "${{ inputs.theme }}" "${{ inputs.pages }}" output/clean-png
+
+      - name: Preparar imágenes subidas
+        if: inputs.source == 'manual'
+        run: node src/prepare-images.js input-images output/clean-png
+
+      - name: Armar interior
+        run: node src/build-book.js "${{ inputs.title }}" "999" 0 output/clean-png
+
+      - name: Generar portada (lomo calculado según diseños)
+        run: |
+          COUNT=$(ls output/clean-png/*.png | wc -l)
+          PAGES=$((2 + COUNT * 2))
+          SEED=$((RANDOM % 100000))
+          echo "Diseños: $COUNT → páginas interiores: $PAGES (seed portada: $SEED)"
+          node src/cover.js "${{ inputs.title }}" "${{ inputs.subtitle }}" "${{ inputs.author }}" "$PAGES" "${{ inputs.palette }}" "$SEED" "${{ inputs.description }}"
+
+      - name: Subir paquete KDP
+        uses: actions/upload-artifact@v4
+        with:
+          name: paquete-kdp-${{ github.run_number }}
+          path: |
+            output/interior.pdf
+            output/cover.pdf
+            output/cover-preview.png
+            output/clean-png/
+          retention-days: 30
