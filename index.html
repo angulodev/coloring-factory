@@ -129,6 +129,12 @@
       <input type="text" id="aiPages" value="10" inputmode="numeric">
       <label for="aiModel">Modelo de IA</label>
       <select id="aiModel"></select>
+      <label for="aiThreshold">Grosor de línea</label>
+      <select id="aiThreshold">
+        <option value="80">Fino (más espacio para colorear)</option>
+        <option value="110" selected>Medio (recomendado)</option>
+        <option value="150">Grueso (para niños)</option>
+      </select>
     </div>
     <label for="cTitle">Título</label>
     <input type="text" id="cTitle" placeholder="Ej: Mandalas Mágicos">
@@ -364,7 +370,7 @@ async function generatePackage(){
   if(!title||!author)return show('genStatus','err','Título y autor son obligatorios.');
   const mode=document.getElementById('mode').value;
   const inputs={title,subtitle:document.getElementById('cSubtitle').value.trim(),author,source:mode,palette:document.getElementById('cPalette').value};
-  if(mode==='ai-free'){const theme=document.getElementById('theme').value.trim();if(!theme)return show('genStatus','err','Escribe el tema para la IA.');inputs.theme=theme;inputs.pages=document.getElementById('aiPages').value.trim()||'10';}
+  if(mode==='ai-free'){const theme=document.getElementById('theme').value.trim();if(!theme)return show('genStatus','err','Escribe el tema para la IA.');inputs.theme=theme;inputs.pages=document.getElementById('aiPages').value.trim()||'10';inputs.line_threshold=document.getElementById('aiThreshold').value;}
   const desc=document.getElementById('cDesc').value.trim();if(desc)inputs.description=desc;
   dispatch('generate-package.yml',inputs,'genStatus');
 }
