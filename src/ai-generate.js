@@ -57,13 +57,23 @@ async function generateOne(theme, apiKey, attempt = 1, authMode = 'goog') {
   return Buffer.from(part.inlineData.data, 'base64');
 }
 
+// Prompt para el proveedor gratis: escenas completas, estilo simple con anatomía correcta
+const PROMPT_TEMPLATE_SIMPLE = (theme) => `Full-page coloring book illustration for children: ${theme}.
+COMPOSITION: a complete scene that fills the ENTIRE page edge to edge — large main subject in the center PLUS background elements (sky, clouds, trees, plants, flowers, ground details) so that every part of the page has shapes to color. No large empty white areas.
+STYLE:
+- Pure black uniform outlines on white background, medium-thick lines
+- NO shading, NO gray tones, NO color, NO solid black filled areas
+- Cute simple cartoon style with CORRECT anatomy and natural proportions
+- All outlines closed, forming clear regions easy to color
+- NO text, NO letters, NO watermark, NO signature`;
+
 // --- Proveedor alternativo: Cloudflare Workers AI (FLUX Schnell, free tier diario) ---
 async function generateOneCF(theme, accountId, token, attempt = 1) {
   const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/black-forest-labs/flux-1-schnell`;
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    body: JSON.stringify({ prompt: PROMPT_TEMPLATE(theme), steps: 8 }),
+    body: JSON.stringify({ prompt: PROMPT_TEMPLATE_SIMPLE(theme), steps: 8 }),
   });
   if (!res.ok) {
     const body = await res.text();
