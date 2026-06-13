@@ -7,244 +7,285 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper: #FFFFFF;
-    --paper-soft: #F7F6F3;
-    --ink: #1C1B19;
-    --ink-soft: #6B6862;
-    --line: #D9D6CF;
-    --pencil: #E8634A;
-    --pencil-soft: #FCEAE5;
-    --pencil-green: #3E8E6B;
-    --pencil-green-soft: #E4F1EA;
-    --radius: 14px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    background: var(--paper); color: var(--ink);
-    line-height: 1.55; padding-bottom: 80px;
-  }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px; }
-
-  header { padding: 36px 0 8px; }
-  header .mandala { width: 72px; height: 72px; display:block; margin-bottom: 14px; }
-  header .mandala .fill { fill: var(--pencil); opacity: 0; transition: opacity .6s ease; }
-  header .mandala .fill.on { opacity: 1; }
-  h1 { font-family: 'Fraunces', serif; font-weight: 700; font-size: clamp(28px, 7vw, 38px); letter-spacing: -0.5px; }
-  header p { color: var(--ink-soft); font-size: 14.5px; margin-top: 4px; max-width: 46ch; }
-
-  .step {
-    border: 1.5px solid var(--ink); border-radius: var(--radius);
-    padding: 20px; margin-top: 22px; background: var(--paper); position: relative;
-  }
-  .step-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
-  .badge {
-    width: 34px; height: 34px; flex: none;
-    border: 1.5px solid var(--ink); border-radius: 50%;
-    display: grid; place-items: center;
-    font-family: 'Fraunces', serif; font-weight: 700; font-size: 16px;
-    background: var(--paper); transition: background .4s, color .4s;
-  }
-  .step.done .badge { background: var(--pencil); border-color: var(--pencil); color: #fff; }
-  .step h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; }
-  .step > p.hint { color: var(--ink-soft); font-size: 13.5px; margin: 2px 0 14px 46px; }
-  .tag {
-    font-size: 11px; font-weight: 600; letter-spacing: .4px; text-transform: uppercase;
-    background: var(--paper-soft); border: 1px solid var(--line); border-radius: 99px;
-    padding: 3px 10px; color: var(--ink-soft); margin-left: auto; flex: none;
-  }
-
-  label { display:block; font-size: 13px; font-weight: 600; margin: 14px 0 5px; }
-  input[type=text], input[type=password], textarea, select {
-    width: 100%; padding: 11px 13px; font: inherit; font-size: 15px;
-    border: 1.5px solid var(--line); border-radius: 10px;
-    background: var(--paper-soft); color: var(--ink); outline: none;
-  }
-  input:focus, textarea:focus, select:focus { border-color: var(--ink); background: var(--paper); }
-  textarea { resize: vertical; min-height: 70px; }
-
-  button {
-    font: inherit; font-weight: 600; font-size: 14.5px;
-    padding: 11px 18px; border-radius: 10px; cursor: pointer;
-    border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper);
-    margin-top: 14px; transition: transform .08s ease;
-  }
-  button:active { transform: scale(.97); }
-  button.ghost { background: var(--paper); color: var(--ink); }
-  button.primary { background: var(--pencil); border-color: var(--pencil); width: 100%; padding: 14px; font-size: 16px; }
-  button:disabled { opacity: .45; cursor: default; }
-  .row { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  .promptbox {
-    margin-top: 14px; padding: 14px; border-radius: 10px;
-    background: var(--pencil-soft); border: 1.5px dashed var(--pencil);
-    font-size: 13.5px; white-space: pre-wrap; word-break: break-word; display: none;
-  }
-  .promptbox.show { display: block; }
-
-  .drop {
-    margin-top: 6px; border: 1.5px dashed var(--line); border-radius: 10px;
-    padding: 22px; text-align: center; color: var(--ink-soft); font-size: 14px;
-    cursor: pointer; background: var(--paper-soft);
-  }
-  .drop.over { border-color: var(--pencil); background: var(--pencil-soft); }
-  .thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1.5px solid var(--line); background: #fff; }
-
-  .status { margin-top: 12px; font-size: 13.5px; padding: 10px 13px; border-radius: 10px; display: none; }
-  .status.show { display: block; }
-  .status.ok   { background: var(--pencil-green-soft); color: var(--pencil-green); }
-  .status.err  { background: #FBE7E7; color: #B3413A; }
-  .status.info { background: var(--paper-soft); color: var(--ink-soft); }
-  .runlink { display: inline-block; margin-top: 10px; font-weight: 600; color: var(--pencil); }
-
-  details.config { margin-top: 26px; border-top: 1.5px solid var(--line); padding-top: 16px; }
-  details.config summary { cursor: pointer; font-size: 13.5px; color: var(--ink-soft); font-weight: 600; }
-  footer { margin-top: 40px; font-size: 12.5px; color: var(--ink-soft); }
+  :root{--paper:#FFF;--paper-soft:#F7F6F3;--ink:#1C1B19;--ink-soft:#6B6862;--line:#D9D6CF;--pencil:#E8634A;--pencil-soft:#FCEAE5;--green:#3E8E6B;--green-soft:#E4F1EA;--radius:14px;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;padding-bottom:90px;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 20px;}
+  header{padding:30px 0 6px;}
+  header .mandala{width:60px;height:60px;display:block;margin-bottom:12px;}
+  header .mandala .fill{fill:var(--pencil);opacity:0;transition:opacity .6s;}
+  header .mandala .fill.on{opacity:1;}
+  h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(26px,7vw,34px);letter-spacing:-.5px;}
+  header p{color:var(--ink-soft);font-size:14px;margin-top:3px;}
+  nav.tabs{position:sticky;top:0;background:var(--paper);z-index:10;display:flex;gap:4px;padding:14px 0 10px;border-bottom:1.5px solid var(--line);margin-bottom:8px;overflow-x:auto;}
+  nav.tabs button{font:inherit;font-weight:600;font-size:13.5px;white-space:nowrap;padding:8px 14px;border-radius:99px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-soft);cursor:pointer;margin:0;}
+  nav.tabs button.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+  .panel{display:none;} .panel.active{display:block;}
+  .card{border:1.5px solid var(--ink);border-radius:var(--radius);padding:20px;margin-top:18px;}
+  .card h2{font-family:'Fraunces',serif;font-weight:500;font-size:20px;margin-bottom:4px;}
+  .card p.hint{color:var(--ink-soft);font-size:13.5px;margin-bottom:8px;}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 5px;}
+  input[type=text],input[type=password],textarea,select{width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink);outline:none;}
+  input:focus,textarea:focus,select:focus{border-color:var(--ink);background:var(--paper);}
+  textarea{resize:vertical;min-height:64px;}
+  button{font:inherit;font-weight:600;font-size:14.5px;padding:11px 18px;border-radius:10px;cursor:pointer;border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);margin-top:14px;transition:transform .08s;}
+  button:active{transform:scale(.97);}
+  button.ghost{background:var(--paper);color:var(--ink);}
+  button.primary{background:var(--pencil);border-color:var(--pencil);width:100%;padding:14px;font-size:16px;}
+  button:disabled{opacity:.45;cursor:default;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;}
+  .promptbox{margin-top:14px;padding:14px;border-radius:10px;background:var(--pencil-soft);border:1.5px dashed var(--pencil);font-size:13.5px;white-space:pre-wrap;word-break:break-word;display:none;}
+  .promptbox.show{display:block;}
+  .drop{margin-top:6px;border:1.5px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--ink-soft);font-size:14px;cursor:pointer;background:var(--paper-soft);}
+  .drop.over{border-color:var(--pencil);background:var(--pencil-soft);}
+  .thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .thumbs img{width:60px;height:60px;object-fit:cover;border-radius:8px;border:1.5px solid var(--line);background:#fff;}
+  .fold{display:none;} .fold.show{display:block;}
+  .status{margin-top:12px;font-size:13.5px;padding:10px 13px;border-radius:10px;display:none;}
+  .status.show{display:block;}
+  .status.ok{background:var(--green-soft);color:var(--green);}
+  .status.err{background:#FBE7E7;color:#B3413A;}
+  .status.info{background:var(--paper-soft);color:var(--ink-soft);}
+  .runlink{display:inline-block;margin-top:8px;font-weight:600;color:var(--pencil);}
+  .hist-item{border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-top:12px;display:flex;align-items:center;gap:12px;}
+  .hist-dot{width:10px;height:10px;border-radius:50%;flex:none;}
+  .hist-dot.ok{background:var(--green);} .hist-dot.err{background:var(--pencil);} .hist-dot.run{background:#E0A93E;}
+  .hist-item .meta{flex:1;min-width:0;}
+  .hist-item .meta .t{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .hist-item .meta .s{font-size:12px;color:var(--ink-soft);}
+  .hist-item a{font-size:13px;font-weight:600;color:var(--pencil);white-space:nowrap;}
+  .keyrow{display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;}
+  .keyrow .name{font-weight:600;font-size:13.5px;flex:1;}
+  .keyrow .state{font-size:12px;padding:2px 8px;border-radius:99px;}
+  .keyrow .state.set{background:var(--green-soft);color:var(--green);}
+  .keyrow .state.unset{background:var(--paper-soft);color:var(--ink-soft);}
+  footer{margin-top:36px;font-size:12.5px;color:var(--ink-soft);}
 </style>
 </head>
 <body>
 <div class="wrap">
-
 <header>
   <svg class="mandala" viewBox="0 0 100 100" aria-hidden="true">
     <g stroke="#1C1B19" stroke-width="2" fill="none">
       <circle class="fill" id="ring3" cx="50" cy="50" r="44" stroke="none"/>
       <circle class="fill" id="ring2" cx="50" cy="50" r="30" stroke="none"/>
       <circle class="fill" id="ring1" cx="50" cy="50" r="16" stroke="none"/>
-      <circle cx="50" cy="50" r="44"/>
-      <circle cx="50" cy="50" r="30"/>
-      <circle cx="50" cy="50" r="16"/>
+      <circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="30"/><circle cx="50" cy="50" r="16"/>
       <g id="petals"></g>
     </g>
   </svg>
   <h1>Coloring Factory</h1>
-  <p>De la idea al paquete KDP completo — interior, portada y diseños — en un toque.</p>
+  <p>De la idea al paquete KDP — en un toque.</p>
 </header>
 
-<!-- PASO 1 -->
-<section class="step" id="step1">
-  <div class="step-head"><div class="badge">1</div><h2>El tema</h2></div>
-  <p class="hint">Describe la idea del libro. Sirve tanto para la IA gratis como para armar tu prompt de Gemini.</p>
-  <label for="theme">Tema</label>
-  <textarea id="theme" placeholder="Ej: mandala de flores tropicales y mariposas"></textarea>
-  <div class="row">
-    <button class="ghost" onclick="buildPrompt()">Crear prompt para Gemini</button>
+<nav class="tabs">
+  <button class="active" data-tab="create" onclick="tab('create',this)">Crear libro</button>
+  <button data-tab="story" onclick="tab('story',this)">Storybook</button>
+  <button data-tab="prompt" onclick="tab('prompt',this)">Prompt IA</button>
+  <button data-tab="history" onclick="tab('history',this)">Historial</button>
+  <button data-tab="config" onclick="tab('config',this)">Configuración</button>
+</nav>
+
+<div class="panel active" id="panel-create">
+  <div class="card">
+    <h2>Generar paquete completo</h2>
+    <p class="hint">Interior + portada listos para KDP.</p>
+    <label for="mode">Fuente de las imágenes</label>
+    <select id="mode" onchange="toggleSource()">
+      <option value="ai-free">Generar con IA gratis (mandalas y patrones)</option>
+      <option value="manual">Cargar mis imágenes (de Gemini u otra)</option>
+    </select>
+    <div class="fold" id="uploadFold">
+      <label>Imágenes del libro</label>
+      <div class="drop" id="drop">Toca para elegir imágenes<br><span style="font-size:12px">(o arrástralas aquí)</span></div>
+      <input type="file" id="fileInput" accept="image/*" multiple hidden>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="row">
+        <button id="uploadBtn" onclick="uploadAll()" disabled>Subir al repo</button>
+        <button class="ghost" onclick="clearRepoFolder()">Vaciar carpeta</button>
+      </div>
+      <div class="status" id="upStatus"></div>
+    </div>
+    <div class="fold show" id="aiFold">
+      <label for="theme">Tema</label>
+      <textarea id="theme" placeholder="Ej: mandala de flores tropicales y mariposas"></textarea>
+      <label for="aiPages">Cantidad de diseños</label>
+      <input type="text" id="aiPages" value="10" inputmode="numeric">
+      <label for="aiModel">Modelo de IA</label>
+      <select id="aiModel"></select>
+    </div>
+    <label for="cTitle">Título</label>
+    <input type="text" id="cTitle" placeholder="Ej: Mandalas Mágicos">
+    <label for="cSubtitle">Subtítulo</label>
+    <input type="text" id="cSubtitle" placeholder="Ej: 50 diseños únicos para relajarte">
+    <label for="cAuthor">Autor</label>
+    <input type="text" id="cAuthor" placeholder="Ej: Francisco & Estefani">
+    <label for="cPalette">Paleta de la portada</label>
+    <select id="cPalette">
+      <option value="sunset">Sunset — coral y dorado</option>
+      <option value="ocean">Ocean — azules y turquesa</option>
+      <option value="tropical">Tropical — verdes y rosa</option>
+      <option value="berry">Berry — púrpura y rosa</option>
+      <option value="noir">Noir — elegante oscuro con dorado</option>
+    </select>
+    <label for="cDesc">Texto de la contraportada</label>
+    <textarea id="cDesc" placeholder="Beneficio emocional + qué incluye + para quién"></textarea>
+    <button class="primary" onclick="generatePackage()">✨ Generar paquete completo</button>
+    <div class="status" id="genStatus"></div>
   </div>
-  <div class="promptbox" id="promptOut"></div>
-  <div class="row">
-    <button class="ghost" id="copyBtn" style="display:none" onclick="copyPrompt()">Copiar prompt</button>
-    <button class="ghost" id="geminiBtn" style="display:none" onclick="window.open('https://gemini.google.com','_blank')">Abrir Gemini ↗</button>
-  </div>
-</section>
-
-<!-- PASO 2 -->
-<section class="step" id="step2">
-  <div class="step-head"><div class="badge">2</div><h2>Tus imágenes</h2><span class="tag">opcional</span></div>
-  <p class="hint">Solo si vas a usar imágenes de Gemini. Si eliges «IA gratis» en el paso 3, salta este paso.</p>
-  <div class="drop" id="drop">Toca para elegir imágenes<br><span style="font-size:12px">(o arrástralas aquí)</span></div>
-  <input type="file" id="fileInput" accept="image/*" multiple hidden>
-  <div class="thumbs" id="thumbs"></div>
-  <div class="row">
-    <button id="uploadBtn" onclick="uploadAll()" disabled>Subir al repo</button>
-    <button class="ghost" onclick="clearRepoFolder()">Vaciar carpeta del repo</button>
-  </div>
-  <div class="status" id="upStatus"></div>
-</section>
-
-<!-- PASO 3 -->
-<section class="step" id="step3">
-  <div class="step-head"><div class="badge">3</div><h2>Genera el paquete</h2></div>
-  <p class="hint">Interior + portada listos para KDP en un solo toque.</p>
-
-  <label for="mode">Fuente de las imágenes</label>
-  <select id="mode" onchange="toggleMode()">
-    <option value="manual">Mis imágenes subidas (paso 2)</option>
-    <option value="ai-free">IA gratis en la nube (mandalas y patrones)</option>
-  </select>
-  <div id="aiFields" style="display:none">
-    <label for="aiPages">Cantidad de diseños</label>
-    <input type="text" id="aiPages" value="10" inputmode="numeric">
-    <p style="font-size:12.5px;color:var(--ink-soft);margin-top:8px">Usa el tema del paso 1. Ideal para mandalas, patrones y formas. Para animales o personajes, usa Gemini + paso 2.</p>
-  </div>
-
-  <label for="cTitle">Título</label>
-  <input type="text" id="cTitle" placeholder="Ej: Mandalas Mágicos">
-  <label for="cSubtitle">Subtítulo</label>
-  <input type="text" id="cSubtitle" placeholder="Ej: 50 diseños únicos para relajarte">
-  <label for="cAuthor">Autor</label>
-  <input type="text" id="cAuthor" placeholder="Ej: Francisco & Estefani">
-  <label for="cPalette">Paleta de la portada</label>
-  <select id="cPalette">
-    <option value="sunset">Sunset — coral y dorado</option>
-    <option value="ocean">Ocean — azules y turquesa</option>
-    <option value="tropical">Tropical — verdes y rosa</option>
-    <option value="berry">Berry — púrpura y rosa</option>
-    <option value="noir">Noir — elegante oscuro con dorado</option>
-  </select>
-  <label for="cDesc">Texto de la contraportada</label>
-  <textarea id="cDesc" placeholder="Beneficio emocional + qué incluye + para quién (regalo)"></textarea>
-
-  <button class="primary" onclick="generatePackage()">✨ Generar paquete completo</button>
-  <div class="status" id="genStatus"></div>
-</section>
-
-<details class="config">
-  <summary>Configuración (token de GitHub)</summary>
-  <label for="pat">Token (fine-grained, permisos: Contents + Actions del repo)</label>
-  <input type="password" id="pat" placeholder="github_pat_...">
-  <button class="ghost" onclick="savePat()">Guardar en este dispositivo</button>
-  <div class="status" id="patStatus"></div>
-</details>
-
-<footer>Repositorio: angulodev/coloring-factory · El token se guarda solo en tu navegador.</footer>
 </div>
 
+<div class="panel" id="panel-story">
+  <div class="card">
+    <h2>Storybook → KDP</h2>
+    <p class="hint">¿Ya tienes el interior en PDF (ej: hecho en Gemini)? Súbelo y le generamos la portada lista para KDP.</p>
+    <label>PDF del interior</label>
+    <div class="drop" id="pdfDrop">Toca para elegir el PDF<br><span style="font-size:12px">(8.5x11&quot;, mínimo 24 páginas)</span></div>
+    <input type="file" id="pdfInput" accept="application/pdf" hidden>
+    <div id="pdfName" style="font-size:13px;color:var(--ink-soft);margin-top:8px;"></div>
+    <button id="pdfUploadBtn" onclick="uploadPdf()" disabled>Subir PDF</button>
+    <div class="status" id="pdfStatus"></div>
+    <label for="sTitle">Título</label>
+    <input type="text" id="sTitle" placeholder="Ej: Aventuras de Michi">
+    <label for="sSubtitle">Subtítulo</label>
+    <input type="text" id="sSubtitle" placeholder="Ej: Un cuento ilustrado">
+    <label for="sAuthor">Autor</label>
+    <input type="text" id="sAuthor" placeholder="Ej: Francisco & Estefani">
+    <label for="sPalette">Paleta de la portada</label>
+    <select id="sPalette">
+      <option value="sunset">Sunset — coral y dorado</option>
+      <option value="ocean">Ocean — azules y turquesa</option>
+      <option value="tropical">Tropical — verdes y rosa</option>
+      <option value="berry">Berry — púrpura y rosa</option>
+      <option value="noir">Noir — elegante oscuro con dorado</option>
+    </select>
+    <label for="sDesc">Texto de la contraportada</label>
+    <textarea id="sDesc" placeholder="Sinopsis que enamore: de qué trata + para quién"></textarea>
+    <button class="primary" onclick="generateStorybook()">📕 Generar portada y paquete</button>
+    <div class="status" id="storyStatus"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-prompt">
+  <div class="card">
+    <h2>Generador de prompt</h2>
+    <p class="hint">Crea el prompt optimizado para generar imágenes en Gemini (u otra IA), listas para colorear.</p>
+    <label for="ptheme">Tema</label>
+    <textarea id="ptheme" placeholder="Ej: un gato entre flores, estilo mandala"></textarea>
+    <button onclick="buildPrompt()">Crear prompt</button>
+    <div class="promptbox" id="promptOut"></div>
+    <div class="row">
+      <button class="ghost" id="copyBtn" style="display:none" onclick="copyPrompt()">Copiar</button>
+      <button class="ghost" id="geminiBtn" style="display:none" onclick="window.open('https://gemini.google.com','_blank')">Abrir Gemini ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel" id="panel-history">
+  <div class="card">
+    <h2>Libros creados</h2>
+    <p class="hint">Tus últimas generaciones y sus descargas.</p>
+    <button class="ghost" onclick="loadHistory()">↻ Actualizar</button>
+    <div id="histList"></div>
+  </div>
+</div>
+
+<div class="panel" id="panel-config">
+  <div class="card">
+    <h2>Token de GitHub</h2>
+    <p class="hint">Permisos del repo: Contents, Actions y Workflows (lectura y escritura). Se guarda solo en este navegador.</p>
+    <input type="password" id="pat" placeholder="github_pat_...">
+    <button class="ghost" onclick="savePat()">Guardar</button>
+    <div class="status" id="patStatus"></div>
+  </div>
+  <div class="card">
+    <h2>Claves de IA</h2>
+    <p class="hint">Para los modos de IA. Se guardan como secrets cifrados del repo (los usa el workflow en la nube).</p>
+    <div id="keyStates"></div>
+    <label for="keyName">Proveedor</label>
+    <select id="keyName">
+      <option value="CF_ACCOUNT_ID">Cloudflare — Account ID</option>
+      <option value="CF_API_TOKEN">Cloudflare — API Token (permiso Workers AI)</option>
+      <option value="GEMINI_API_KEY">Gemini — API Key</option>
+    </select>
+    <label for="keyVal">Valor</label>
+    <input type="password" id="keyVal" placeholder="Pega el valor de la clave">
+    <button class="ghost" onclick="saveSecret()">Guardar clave en el repo</button>
+    <div class="status" id="keyStatus"></div>
+  </div>
+</div>
+
+<footer>Repositorio: angulodev/coloring-factory</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/libsodium-wrappers/0.7.13/sodium.js"></script>
 <script>
-const OWNER = 'angulodev', REPO = 'coloring-factory';
-const API = `https://api.github.com/repos/${OWNER}/${REPO}`;
-let files = [];
+const OWNER='angulodev',REPO='coloring-factory';
+const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
+let files=[],pdfFile=null,sodiumReady=false;
 
-(() => {
-  const g = document.getElementById('petals');
-  let d = '';
-  for (let i = 0; i < 12; i++) {
-    const a = (i * 30 - 90) * Math.PI / 180;
-    d += `M ${50 + 16 * Math.cos(a)} ${50 + 16 * Math.sin(a)} L ${50 + 30 * Math.cos(a)} ${50 + 30 * Math.sin(a)} `;
-  }
-  g.innerHTML = `<path d="${d}"/>`;
-})();
-function markDone(n) {
-  document.getElementById('step' + n).classList.add('done');
-  document.getElementById('ring' + n).classList.add('on');
+const AI_MODELS=[{id:'@cf/black-forest-labs/flux-1-schnell',label:'FLUX Schnell (Cloudflare, gratis)'}];
+
+(async()=>{ if(window.sodium&&sodium.ready){await sodium.ready;sodiumReady=true;} })();
+
+(()=>{const g=document.getElementById('petals');let d='';for(let i=0;i<12;i++){const a=(i*30-90)*Math.PI/180;d+=`M ${50+16*Math.cos(a)} ${50+16*Math.sin(a)} L ${50+30*Math.cos(a)} ${50+30*Math.sin(a)} `;}g.innerHTML=`<path d="${d}"/>`;})();
+
+const pat=()=>localStorage.getItem('cf_pat')||'';
+const headers=()=>({'Authorization':'Bearer '+pat(),'Accept':'application/vnd.github+json'});
+function show(id,cls,msg){const el=document.getElementById(id);el.className='status show '+cls;el.innerHTML=msg;}
+function needPat(id){if(pat())return false;show(id,'err','Falta el token de GitHub. Ve a la pestaña Configuración.');return true;}
+
+function tab(name,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name==='history')loadHistory();
+  if(name==='config')refreshKeyStates();
+  window.scrollTo(0,0);
+}
+(()=>{const m=document.getElementById('aiModel');AI_MODELS.forEach(x=>{const o=document.createElement('option');o.value=x.id;o.textContent=x.label;m.appendChild(o);});})();
+if(pat())document.getElementById('pat').value='••••••••••••';
+
+function toggleSource(){const m=document.getElementById('mode').value;document.getElementById('uploadFold').classList.toggle('show',m==='manual');document.getElementById('aiFold').classList.toggle('show',m==='ai-free');}
+
+function savePat(){const v=document.getElementById('pat').value.trim();if(!v||v.startsWith('•'))return show('patStatus','err','Pega el token primero.');localStorage.setItem('cf_pat',v);show('patStatus','ok','Token guardado en este navegador.');}
+
+async function refreshKeyStates(){
+  const wrap=document.getElementById('keyStates');wrap.innerHTML='';
+  if(!pat()){wrap.innerHTML='<p style="font-size:13px;color:var(--ink-soft)">Guarda primero el token de GitHub.</p>';return;}
+  try{
+    const data=await(await fetch(`${API}/actions/secrets`,{headers:headers()})).json();
+    const names=(data.secrets||[]).map(s=>s.name);
+    [['CF_ACCOUNT_ID','Cloudflare Account ID'],['CF_API_TOKEN','Cloudflare API Token'],['GEMINI_API_KEY','Gemini API Key']].forEach(([k,label])=>{
+      const set=names.includes(k);
+      wrap.insertAdjacentHTML('beforeend',`<div class="keyrow"><span class="name">${label}</span><span class="state ${set?'set':'unset'}">${set?'configurada':'no configurada'}</span></div>`);
+    });
+  }catch(e){wrap.innerHTML='<p style="font-size:13px;color:#B3413A">Error: '+e.message+'</p>';}
+}
+async function saveSecret(){
+  if(needPat('keyStatus'))return;
+  if(!sodiumReady){try{await sodium.ready;sodiumReady=true;}catch(e){return show('keyStatus','err','No se pudo cargar el cifrado. Recarga la página.');}}
+  const name=document.getElementById('keyName').value;
+  const val=document.getElementById('keyVal').value.trim();
+  if(!val)return show('keyStatus','err','Pega el valor de la clave.');
+  show('keyStatus','info','Cifrando y guardando…');
+  try{
+    const pk=await(await fetch(`${API}/actions/secrets/public-key`,{headers:headers()})).json();
+    const keyBytes=sodium.from_base64(pk.key,sodium.base64_variants.ORIGINAL);
+    const sealed=sodium.crypto_box_seal(sodium.from_string(val),keyBytes);
+    const enc=sodium.to_base64(sealed,sodium.base64_variants.ORIGINAL);
+    const res=await fetch(`${API}/actions/secrets/${name}`,{method:'PUT',headers:headers(),body:JSON.stringify({encrypted_value:enc,key_id:pk.key_id})});
+    if(res.status!==201&&res.status!==204)throw new Error('HTTP '+res.status);
+    document.getElementById('keyVal').value='';
+    show('keyStatus','ok','✓ Clave guardada de forma cifrada.');
+    refreshKeyStates();
+  }catch(e){show('keyStatus','err','Error: '+e.message);}
 }
 
-const pat = () => localStorage.getItem('cf_pat') || '';
-const headers = () => ({ 'Authorization': 'Bearer ' + pat(), 'Accept': 'application/vnd.github+json' });
-function show(id, cls, msg) {
-  const el = document.getElementById(id);
-  el.className = 'status show ' + cls; el.innerHTML = msg;
-}
-function needPat(id) {
-  if (pat()) return false;
-  show(id, 'err', 'Falta el token. Ábrelo en «Configuración» abajo y guárdalo.');
-  return true;
-}
-
-function savePat() {
-  const v = document.getElementById('pat').value.trim();
-  if (!v) return show('patStatus', 'err', 'Pega el token primero.');
-  localStorage.setItem('cf_pat', v);
-  show('patStatus', 'ok', 'Token guardado en este navegador.');
-}
-if (pat()) document.getElementById('pat').value = '••••••••••••';
-
-// --- paso 1 ---
-function buildPrompt() {
-  const theme = document.getElementById('theme').value.trim();
-  if (!theme) return;
-  const prompt = `Intricate coloring book page: ${theme}.
+function buildPrompt(){
+  const theme=document.getElementById('ptheme').value.trim();if(!theme)return;
+  const prompt=`Intricate coloring book page: ${theme}.
 STYLE REQUIREMENTS:
 - Pure black line art on a plain white background
 - NO shading, NO gray tones, NO color, NO gradients
@@ -253,157 +294,96 @@ STYLE REQUIREMENTS:
 - Highly detailed, ornate, mandala-level intricacy
 - Centered composition with comfortable white margin around the edges
 - Vertical portrait format (3:4), like a book page`;
-  const box = document.getElementById('promptOut');
-  box.textContent = prompt; box.classList.add('show');
-  document.getElementById('copyBtn').style.display = 'inline-block';
-  document.getElementById('geminiBtn').style.display = 'inline-block';
-  markDone(1);
+  const box=document.getElementById('promptOut');box.textContent=prompt;box.classList.add('show');
+  document.getElementById('copyBtn').style.display='inline-block';
+  document.getElementById('geminiBtn').style.display='inline-block';
 }
-function copyPrompt() {
-  navigator.clipboard.writeText(document.getElementById('promptOut').textContent);
-  document.getElementById('copyBtn').textContent = 'Copiado ✓';
-  setTimeout(() => document.getElementById('copyBtn').textContent = 'Copiar prompt', 1600);
+function copyPrompt(){navigator.clipboard.writeText(document.getElementById('promptOut').textContent);const b=document.getElementById('copyBtn');b.textContent='Copiado ✓';setTimeout(()=>b.textContent='Copiar',1500);}
+
+const drop=document.getElementById('drop'),fileInput=document.getElementById('fileInput');
+drop.onclick=()=>fileInput.click();
+drop.ondragover=e=>{e.preventDefault();drop.classList.add('over');};
+drop.ondragleave=()=>drop.classList.remove('over');
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');addFiles(e.dataTransfer.files);};
+fileInput.onchange=()=>addFiles(fileInput.files);
+function addFiles(list){for(const f of list)if(f.type.startsWith('image/'))files.push(f);const t=document.getElementById('thumbs');t.innerHTML='';files.forEach(f=>{const img=document.createElement('img');img.src=URL.createObjectURL(f);t.appendChild(img);});document.getElementById('uploadBtn').disabled=files.length===0;drop.innerHTML=`${files.length} imagen(es) — toca para agregar más`;}
+function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
+async function putFile(path,b64,msg){let sha;const c=await fetch(`${API}/contents/${path}`,{headers:headers()});if(c.ok)sha=(await c.json()).sha;const res=await fetch(`${API}/contents/${path}`,{method:'PUT',headers:headers(),body:JSON.stringify({message:msg,content:b64,...(sha&&{sha})})});if(!res.ok)throw new Error(`${path}: HTTP ${res.status}`);}
+async function uploadAll(){
+  if(needPat('upStatus'))return;
+  const btn=document.getElementById('uploadBtn');btn.disabled=true;
+  try{
+    for(let i=0;i<files.length;i++){show('upStatus','info',`Subiendo ${i+1} de ${files.length}…`);const ext=(files[i].name.split('.').pop()||'png').toLowerCase();await putFile(`input-images/img-${Date.now()}-${String(i+1).padStart(2,'0')}.${ext}`,await toB64(files[i]),'ui: subir imagen');}
+    show('upStatus','ok',`✓ ${files.length} imagen(es) subidas.`);files=[];document.getElementById('thumbs').innerHTML='';drop.innerHTML='Toca para elegir más imágenes';
+  }catch(e){show('upStatus','err','Error: '+e.message);btn.disabled=false;}
 }
-
-// --- paso 2 ---
-const drop = document.getElementById('drop'), fileInput = document.getElementById('fileInput');
-drop.onclick = () => fileInput.click();
-drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
-drop.ondragleave = () => drop.classList.remove('over');
-drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); addFiles(e.dataTransfer.files); };
-fileInput.onchange = () => addFiles(fileInput.files);
-
-function addFiles(list) {
-  for (const f of list) if (f.type.startsWith('image/')) files.push(f);
-  const t = document.getElementById('thumbs'); t.innerHTML = '';
-  files.forEach(f => {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(f); t.appendChild(img);
-  });
-  document.getElementById('uploadBtn').disabled = files.length === 0;
-  drop.innerHTML = `${files.length} imagen(es) seleccionada(s) — toca para agregar más`;
-}
-
-function toB64(file) {
-  return new Promise((res, rej) => {
-    const r = new FileReader();
-    r.onload = () => res(r.result.split(',')[1]);
-    r.onerror = rej;
-    r.readAsDataURL(file);
-  });
+async function clearRepoFolder(){
+  if(needPat('upStatus'))return;
+  if(!confirm('¿Borrar todas las imágenes de input-images/?'))return;
+  show('upStatus','info','Vaciando…');
+  try{const items=await(await fetch(`${API}/contents/input-images`,{headers:headers()})).json();const imgs=items.filter(i=>i.type==='file'&&/\.(png|jpe?g|webp)$/i.test(i.name));for(const it of imgs)await fetch(`${API}/contents/${it.path}`,{method:'DELETE',headers:headers(),body:JSON.stringify({message:'ui: limpiar',sha:it.sha})});show('upStatus','ok',`✓ ${imgs.length} archivo(s) borrados.`);}catch(e){show('upStatus','err','Error: '+e.message);}
 }
 
-async function putFile(path, contentB64, message) {
-  let sha;
-  const check = await fetch(`${API}/contents/${path}`, { headers: headers() });
-  if (check.ok) sha = (await check.json()).sha;
-  const res = await fetch(`${API}/contents/${path}`, {
-    method: 'PUT', headers: headers(),
-    body: JSON.stringify({ message, content: contentB64, ...(sha && { sha }) }),
-  });
-  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+const pdfDrop=document.getElementById('pdfDrop'),pdfInput=document.getElementById('pdfInput');
+pdfDrop.onclick=()=>pdfInput.click();
+pdfInput.onchange=()=>{pdfFile=pdfInput.files[0];if(pdfFile){document.getElementById('pdfName').textContent='📄 '+pdfFile.name;document.getElementById('pdfUploadBtn').disabled=false;}};
+async function uploadPdf(){
+  if(needPat('pdfStatus'))return;if(!pdfFile)return;
+  const btn=document.getElementById('pdfUploadBtn');btn.disabled=true;
+  show('pdfStatus','info','Subiendo PDF…');
+  try{
+    try{const items=await(await fetch(`${API}/contents/input-book`,{headers:headers()})).json();if(Array.isArray(items))for(const it of items)if(it.name.endsWith('.pdf'))await fetch(`${API}/contents/${it.path}`,{method:'DELETE',headers:headers(),body:JSON.stringify({message:'ui: limpiar pdf',sha:it.sha})});}catch(e){}
+    await putFile('input-book/interior.pdf',await toB64(pdfFile),'ui: subir storybook pdf');
+    show('pdfStatus','ok','✓ PDF subido. Completa los datos y genera la portada.');
+  }catch(e){show('pdfStatus','err','Error: '+e.message);btn.disabled=false;}
 }
 
-async function uploadAll() {
-  if (needPat('upStatus')) return;
-  const btn = document.getElementById('uploadBtn'); btn.disabled = true;
-  try {
-    for (let i = 0; i < files.length; i++) {
-      show('upStatus', 'info', `Subiendo ${i + 1} de ${files.length}…`);
-      const ext = (files[i].name.split('.').pop() || 'png').toLowerCase();
-      const name = `img-${Date.now()}-${String(i + 1).padStart(2, '0')}.${ext}`;
-      await putFile(`input-images/${name}`, await toB64(files[i]), `ui: subir ${name}`);
-    }
-    show('upStatus', 'ok', `✓ ${files.length} imagen(es) subidas al repo.`);
-    files = []; document.getElementById('thumbs').innerHTML = '';
-    drop.innerHTML = 'Toca para elegir más imágenes';
-    markDone(2);
-  } catch (e) {
-    show('upStatus', 'err', 'Error al subir: ' + e.message + '. Revisa que el token tenga permiso Contents (write).');
-    btn.disabled = false;
-  }
+async function dispatch(workflow,inputs,statusId){
+  if(needPat(statusId))return;
+  show(statusId,'info','Disparando generación…');
+  try{const res=await fetch(`${API}/actions/workflows/${workflow}/dispatches`,{method:'POST',headers:headers(),body:JSON.stringify({ref:'main',inputs})});if(res.status!==204)throw new Error('HTTP '+res.status);setTimeout(()=>pollRun(statusId,0),8000);}catch(e){show(statusId,'err','No se pudo disparar: '+e.message);}
+}
+async function generatePackage(){
+  const title=document.getElementById('cTitle').value.trim(),author=document.getElementById('cAuthor').value.trim();
+  if(!title||!author)return show('genStatus','err','Título y autor son obligatorios.');
+  const mode=document.getElementById('mode').value;
+  const inputs={title,subtitle:document.getElementById('cSubtitle').value.trim(),author,source:mode,palette:document.getElementById('cPalette').value};
+  if(mode==='ai-free'){const theme=document.getElementById('theme').value.trim();if(!theme)return show('genStatus','err','Escribe el tema para la IA.');inputs.theme=theme;inputs.pages=document.getElementById('aiPages').value.trim()||'10';}
+  const desc=document.getElementById('cDesc').value.trim();if(desc)inputs.description=desc;
+  dispatch('generate-package.yml',inputs,'genStatus');
+}
+async function generateStorybook(){
+  const title=document.getElementById('sTitle').value.trim(),author=document.getElementById('sAuthor').value.trim();
+  if(!title||!author)return show('storyStatus','err','Título y autor son obligatorios.');
+  const inputs={title,subtitle:document.getElementById('sSubtitle').value.trim(),author,palette:document.getElementById('sPalette').value};
+  const desc=document.getElementById('sDesc').value.trim();if(desc)inputs.description=desc;
+  dispatch('process-storybook.yml',inputs,'storyStatus');
+}
+async function pollRun(statusId,tries){
+  try{
+    const run=(await(await fetch(`${API}/actions/runs?per_page=1`,{headers:headers()})).json()).workflow_runs[0];
+    if(run.status!=='completed'){if(tries>40)return show(statusId,'err','Tardó demasiado. Revisa el Historial.');show(statusId,'info',`Estado: ${run.status}… ⏳`);return setTimeout(()=>pollRun(statusId,tries+1),8000);}
+    if(run.conclusion==='success')show(statusId,'ok',`✓ ¡Listo! Descarga en los artifacts:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir y descargar ↗</a>`);
+    else show(statusId,'err',`Terminó en «${run.conclusion}». <a class="runlink" href="${run.html_url}" target="_blank">Ver logs ↗</a>`);
+  }catch(e){show(statusId,'err','Error: '+e.message);}
 }
 
-async function clearRepoFolder() {
-  if (needPat('upStatus')) return;
-  if (!confirm('¿Borrar todas las imágenes de input-images/ en el repo?')) return;
-  show('upStatus', 'info', 'Vaciando carpeta…');
-  try {
-    const res = await fetch(`${API}/contents/input-images`, { headers: headers() });
-    const items = await res.json();
-    const imgs = items.filter(i => i.type === 'file' && /\.(png|jpe?g|webp)$/i.test(i.name));
-    for (const it of imgs) {
-      await fetch(`${API}/contents/${it.path}`, {
-        method: 'DELETE', headers: headers(),
-        body: JSON.stringify({ message: 'ui: limpiar ' + it.name, sha: it.sha }),
-      });
-    }
-    show('upStatus', 'ok', `✓ Carpeta vaciada (${imgs.length} archivo(s) borrados).`);
-  } catch (e) {
-    show('upStatus', 'err', 'Error al vaciar: ' + e.message);
-  }
-}
-
-// --- paso 3: paquete completo ---
-function toggleMode() {
-  document.getElementById('aiFields').style.display =
-    document.getElementById('mode').value === 'ai-free' ? 'block' : 'none';
-}
-
-async function generatePackage() {
-  if (needPat('genStatus')) return;
-  const title = document.getElementById('cTitle').value.trim();
-  const author = document.getElementById('cAuthor').value.trim();
-  if (!title || !author) return show('genStatus', 'err', 'El título y el autor son obligatorios.');
-
-  const mode = document.getElementById('mode').value;
-  const inputs = {
-    title,
-    subtitle: document.getElementById('cSubtitle').value.trim(),
-    author,
-    source: mode,
-    palette: document.getElementById('cPalette').value,
-  };
-  if (mode === 'ai-free') {
-    const theme = document.getElementById('theme').value.trim();
-    if (!theme) return show('genStatus', 'err', 'Para IA gratis, escribe el tema en el paso 1.');
-    inputs.theme = theme;
-    inputs.pages = document.getElementById('aiPages').value.trim() || '10';
-  }
-  const desc = document.getElementById('cDesc').value.trim();
-  if (desc) inputs.description = desc;
-
-  show('genStatus', 'info', 'Generando tu paquete (imágenes + interior + portada)…');
-  try {
-    const res = await fetch(`${API}/actions/workflows/generate-package.yml/dispatches`, {
-      method: 'POST', headers: headers(),
-      body: JSON.stringify({ ref: 'main', inputs }),
+async function loadHistory(){
+  const list=document.getElementById('histList');
+  if(!pat()){list.innerHTML='<p style="font-size:13px;color:var(--ink-soft);margin-top:12px">Guarda el token de GitHub en Configuración.</p>';return;}
+  list.innerHTML='<p style="font-size:13px;color:var(--ink-soft);margin-top:12px">Cargando…</p>';
+  try{
+    const data=await(await fetch(`${API}/actions/runs?per_page=20`,{headers:headers()})).json();
+    const runs=(data.workflow_runs||[]).filter(r=>['Generar paquete completo','Procesar storybook'].includes(r.name));
+    if(!runs.length){list.innerHTML='<p style="font-size:13px;color:var(--ink-soft);margin-top:12px">Aún no hay libros generados.</p>';return;}
+    list.innerHTML='';
+    runs.forEach(r=>{
+      const dot=r.status!=='completed'?'run':(r.conclusion==='success'?'ok':'err');
+      const date=new Date(r.created_at).toLocaleString('es-CL',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+      const label=r.status!=='completed'?'en proceso':(r.conclusion==='success'?'completado':'falló');
+      list.insertAdjacentHTML('beforeend',`<div class="hist-item"><span class="hist-dot ${dot}"></span><div class="meta"><div class="t">${r.display_title||r.name}</div><div class="s">${date} · ${label}</div></div><a href="${r.html_url}" target="_blank">Abrir ↗</a></div>`);
     });
-    if (res.status !== 204) throw new Error('HTTP ' + res.status);
-    setTimeout(() => pollRun(0), 8000);
-  } catch (e) {
-    show('genStatus', 'err', 'No se pudo disparar: ' + e.message + '. Revisa el permiso Actions (write) del token.');
-  }
-}
-
-async function pollRun(tries) {
-  try {
-    const res = await fetch(`${API}/actions/runs?per_page=1`, { headers: headers() });
-    const run = (await res.json()).workflow_runs[0];
-    if (run.status !== 'completed') {
-      if (tries > 40) return show('genStatus', 'err', 'Tardó demasiado. Revisa el run en GitHub.');
-      show('genStatus', 'info', `Estado: ${run.status}… ⏳`);
-      return setTimeout(() => pollRun(tries + 1), 8000);
-    }
-    if (run.conclusion === 'success') {
-      show('genStatus', 'ok', `✓ ¡Paquete KDP listo! Interior + portada + preview en los artifacts:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir run y descargar ↗</a>`);
-      markDone(3);
-    } else {
-      show('genStatus', 'err', `El run terminó en «${run.conclusion}». <a class="runlink" href="${run.html_url}" target="_blank">Ver logs ↗</a>`);
-    }
-  } catch (e) {
-    show('genStatus', 'err', 'Error consultando estado: ' + e.message);
-  }
+  }catch(e){list.innerHTML='<p style="font-size:13px;color:#B3413A;margin-top:12px">Error: '+e.message+'</p>';}
 }
 </script>
 </body>
