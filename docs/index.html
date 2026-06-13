@@ -186,6 +186,32 @@
   <div class="status" id="genStatus"></div>
 </section>
 
+<!-- PASO 4 -->
+<section class="step" id="step4">
+  <div class="step-head"><div class="badge">4</div><h2>Crea la portada</h2></div>
+  <p class="hint">Portada envolvente lista para KDP: contraportada, lomo calculado y zona de código de barras.</p>
+  <label for="cTitle">Título</label>
+  <input type="text" id="cTitle" placeholder="Ej: Mandalas Mágicos">
+  <label for="cSubtitle">Subtítulo</label>
+  <input type="text" id="cSubtitle" placeholder="Ej: 50 diseños únicos para relajarte">
+  <label for="cAuthor">Autor</label>
+  <input type="text" id="cAuthor" placeholder="Ej: Francisco & Estefani">
+  <label for="cDesigns">Cantidad de diseños del libro</label>
+  <input type="text" id="cDesigns" value="50" inputmode="numeric">
+  <label for="cPalette">Paleta</label>
+  <select id="cPalette" style="width:100%;padding:11px 13px;font:inherit;font-size:15px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper-soft);color:var(--ink)">
+    <option value="sunset">Sunset — coral y dorado</option>
+    <option value="ocean">Ocean — azules y turquesa</option>
+    <option value="tropical">Tropical — verdes y rosa</option>
+    <option value="berry">Berry — púrpura y rosa</option>
+    <option value="noir">Noir — elegante oscuro con dorado</option>
+  </select>
+  <label for="cDesc">Texto de la contraportada</label>
+  <textarea id="cDesc" placeholder="Descripción que vende: beneficio + qué incluye + para quién"></textarea>
+  <button onclick="generateCover()">Generar portada</button>
+  <div class="status" id="coverStatus"></div>
+</section>
+
 <details class="config">
   <summary>Configuración (token de GitHub)</summary>
   <label for="pat">Token (fine-grained, permisos: Contents + Actions del repo)</label>
@@ -228,6 +254,54 @@ function needPat(id) {
   if (pat()) return false;
   show(id, 'err', 'Falta el token. Ábrelo en «Configuración» abajo y guárdalo.');
   return true;
+}
+
+// --- paso 4: portada ---
+async function generateCover() {
+  if (needPat('coverStatus')) return;
+  const t = document.getElementById('cTitle').value.trim();
+  const a = document.getElementById('cAuthor').value.trim();
+  if (!t || !a) return show('coverStatus', 'err', 'El título y el autor son obligatorios.');
+  const designs = parseInt(document.getElementById('cDesigns').value.trim() || '50', 10);
+  const pages = String(2 + designs * 2); // título + blanco + (diseño + reverso) x N
+  const inputs = {
+    title: t,
+    subtitle: document.getElementById('cSubtitle').value.trim(),
+    author: a,
+    pages,
+    palette: document.getElementById('cPalette').value,
+    seed: String(Math.floor(Math.random() * 100000)),
+  };
+  const desc = document.getElementById('cDesc').value.trim();
+  if (desc) inputs.description = desc;
+  show('coverStatus', 'info', 'Generando portada…');
+  try {
+    const res = await fetch(`${API}/actions/workflows/generate-cover.yml/dispatches`, {
+      method: 'POST', headers: headers(),
+      body: JSON.stringify({ ref: 'main', inputs }),
+    });
+    if (res.status !== 204) throw new Error('HTTP ' + res.status);
+    setTimeout(() => pollRunInto('coverStatus'), 8000);
+  } catch (e) {
+    show('coverStatus', 'err', 'No se pudo disparar: ' + e.message);
+  }
+}
+
+async function pollRunInto(target, tries = 0) {
+  try {
+    const res = await fetch(`${API}/actions/runs?per_page=1`, { headers: headers() });
+    const run = (await res.json()).workflow_runs[0];
+    if (run.status !== 'completed') {
+      if (tries > 30) return show(target, 'err', 'Tardó demasiado. Revisa el run en GitHub.');
+      show(target, 'info', `Estado: ${run.status}… ⏳`);
+      return setTimeout(() => pollRunInto(target, tries + 1), 8000);
+    }
+    if (run.conclusion === 'success') {
+      show(target, 'ok', `✓ ¡Lista! Descarga el PDF y el preview en los artifacts:<br><a class="runlink" href="${run.html_url}" target="_blank">Abrir run y descargar ↗</a>`);
+    } else {
+      show(target, 'err', `Terminó en «${run.conclusion}». <a class="runlink" href="${run.html_url}" target="_blank">Ver logs ↗</a>`);
+    }
+  } catch (e) { show(target, 'err', 'Error consultando estado: ' + e.message); }
 }
 
 // --- config ---
